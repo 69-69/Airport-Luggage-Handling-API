@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: Airport-Luggage-Handling-API
+  # Spring Data Source Config
+  datasource:
+    url: jdbc:postgresql://localhost:5432/airportluggage
+    # url: jdbc:postgresql://database-2.ccg66chzdfr3.us-east-2.rds.amazonaws.com:5432/auto_mobiles
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+    name: airportluggage
+
+  jpa:
+    hibernate:
+      ddl-auto: create # UPDATE: creates/updates tables automatically)
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
