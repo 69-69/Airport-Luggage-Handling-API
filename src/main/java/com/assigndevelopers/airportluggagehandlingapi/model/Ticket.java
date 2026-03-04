@@ -4,16 +4,14 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
 @Entity(name = "flight_tickets")
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String ticketNumber;
+    @Column(name = "ticket_number", length =  10, nullable = false, unique = true)
+    private String number;
 
     // Many Tickets have One Flight
     @ManyToOne
@@ -24,22 +22,46 @@ public class Ticket {
     @JsonBackReference // Prevents Child class (Ticket) from serializing Parent class (Flight)
     private Flight flight;
 
-    // Many Tickets have One Passenger
-    @ManyToOne
+    // One Ticket have One Passenger
+    @OneToOne
     @JoinColumn(
             name = "passenger_id",
             nullable = false
     )
     private Passenger passenger;
 
+    @Column(nullable = false)
+    private String createdAt;
+
+    private String updatedAt;
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     // Constructors
     public Ticket() {
     }
 
     @Autowired
-    public Ticket(String ticketNumber, Flight flight, Passenger passenger) {
-        this.ticketNumber = ticketNumber;
+    public Ticket(String number, Flight flight, Passenger passenger, String createdAt, String updatedAt) {
+        this.number = number;
         this.flight = flight;
+        this.passenger = passenger;
+        this.createdAt=createdAt;
+        this.updatedAt=updatedAt;
     }
 
     // Getters and setters
@@ -51,12 +73,12 @@ public class Ticket {
         this.id = id;
     }
 
-    public String getTicketNumber() {
-        return ticketNumber;
+    public String getNumber() {
+        return number;
     }
 
-    public void setTicketNumber(String ticketNumber) {
-        this.ticketNumber = ticketNumber;
+    public void setNumber(String ticketNumber) {
+        this.number = ticketNumber;
     }
 
     public Flight getFlight() {

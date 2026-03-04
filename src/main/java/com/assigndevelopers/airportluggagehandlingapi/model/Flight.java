@@ -12,15 +12,24 @@ public class Flight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String airlineName;
+
+    @Column(nullable = false)
     private String destination;
-    private String flightId;
+
+    /*@Column(nullable = false)
+    private String flightNumber; // 123456*/
 
     @Column(length =  6, nullable = false)
-    private String flightNumber; // AA1234
+    private String flightCode; // AA1234
 
     private String departureTime;
+
+    @Column(nullable = false)
     private String terminal;
+
+    @Column(nullable = false, unique = true)
     private String gate;
 
     // One Flight has Many Tickets
@@ -32,19 +41,61 @@ public class Flight {
     @JsonManagedReference // This prevents infinite Loop
     private List<Ticket> tickets;
 
+    public List<Bag> getBags() {
+        return bags;
+    }
+
+    public void setBags(List<Bag> bags) {
+        this.bags = bags;
+    }
+
+    // new here
+    @OneToMany(
+            mappedBy = "flight",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonManagedReference
+    private List<Bag> bags;
+
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Column(nullable = false)
+    private String createdAt;
+
+    private String updatedAt;
+
     // Constructors
     public Flight() {
     }
 
     @Autowired
-    public Flight(String airlineName, String destination, String flightId, String flightNumber, String departureTime, String terminal, String gate) {
+    public Flight(String airlineName, String destination, String flightCode, String departureTime, String terminal, String gate, String createdAt, String updatedAt, List<Bag> bags) {
         this.airlineName = airlineName;
         this.destination = destination;
-        this.flightId = flightId;
-        this.flightNumber = flightNumber;
+//        this.flightNumber = flightNumber;
+        this.flightCode = flightCode;
         this.departureTime = departureTime;
         this.terminal = terminal;
         this.gate = gate;
+        this.createdAt=createdAt;
+        this.updatedAt=updatedAt;
+        this.bags=bags;
     }
 
     // Getters and setters
@@ -72,13 +123,13 @@ public class Flight {
         this.destination = destination;
     }
 
-    public String getFlightId() {
-        return flightId;
+    /*public String getFlightNumber() {
+        return flightNumber;
     }
 
-    public void setFlightId(String flightId) {
-        this.flightId = flightId;
-    }
+    public void setFlightNumber(String flightId) {
+        this.flightNumber = flightId;
+    }*/
 
     public String getDepartureTime() {
         return departureTime;
@@ -112,11 +163,11 @@ public class Flight {
         this.tickets = tickets;
     }
 
-    public String getFlightNumber() {
-        return flightNumber;
+    public String getFlightCode() {
+        return flightCode;
     }
 
-    public void setFlightNumber(String flightNumber) {
-        this.flightNumber = flightNumber;
+    public void setFlightCode(String flightNumber) {
+        this.flightCode = flightNumber;
     }
 }

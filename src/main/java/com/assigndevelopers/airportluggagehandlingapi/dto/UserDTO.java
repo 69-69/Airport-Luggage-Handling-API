@@ -3,6 +3,10 @@ package com.assigndevelopers.airportluggagehandlingapi.dto;
 public class UserDTO {
     private String username;
     private String email;
+
+    private String phone;
+
+//    @EnumValidator
     private String role;
     private String firstname;
     private String lastname;
@@ -12,14 +16,15 @@ public class UserDTO {
     // Constructors
     public UserDTO() {}
 
-    public UserDTO(String username, String email, String role, String firstname, String lastname, String airline, boolean firstLogin) {
-        this.username = username;
-        this.email = email;
+    public UserDTO(String role, String username, boolean firstLogin, String email, String phone, String firstname, String lastname, String airline) {
         this.role = role;
+        this.username = username;
+        this.firstLogin = firstLogin;
+        this.email = email;
+        this.phone = phone;
         this.firstname = firstname;
         this.lastname = lastname;
         this.airline = airline;
-        this.firstLogin = firstLogin;
     }
 
     // Getters and Setters
@@ -63,6 +68,14 @@ public class UserDTO {
     }
     public void setFirstLogin(boolean firstLogin) {
         this.firstLogin = firstLogin;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getEmail() {

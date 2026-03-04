@@ -1,49 +1,87 @@
 package com.assigndevelopers.airportluggagehandlingapi.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @Entity
 @Table(name = "_user")
 public class User {
     // Using generated security password: 976adece-732e-41e4-b6f5-b584a9f00f20
 
-    @Id
+    /*@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id;*/
 
+    @Column(nullable = false)
     private String role;
+
+    @Id
+    @Column(unique = true, nullable = false, updatable = false)
     private String username;
+
+    @Column(nullable = false)
     private String password;
-    private String email;
-    private String phone;
-    private String firstname;
-    private String lastname;
+    /*
+     *  ONE-TO-ONE WITH USER PROFILE
+     */
+    @OneToOne(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private UserProfile profile;
 
-    @Column(length = 2)
-    private String airline;
+    /*
+     *  ONE-TO-MANY (Sent Messages)
+     */
+    @OneToMany(mappedBy = "sender")
+    @JsonManagedReference
+    private List<MessageBoard> sentMessages;
 
+    /*
+     *  ONE-TO-MANY (Received Messages)
+     */
+    @OneToMany(mappedBy = "recipient")
+    @JsonManagedReference
+    private List<MessageBoard> receivedMessages;
+
+    @Column(nullable = false)
     private boolean isFirstLogin;
 
     // Constructors
-    public User() {}
+    public User() {
+    }
 
     @Autowired
-    public User(String role, String username, String password, String email, String phone, String firstname, String lastname, String airline, boolean isFirstLogin) {
+    public User(String role, String username, String password, boolean isFirstLogin, UserProfile profile) {
         this.role = role;
         this.username = username;
         this.password = password;
-        this.email = email;
-        this.phone = phone;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.airline = airline;
         this.isFirstLogin = isFirstLogin;
+        this.profile = profile;
     }
 
-    // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public UserProfile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(UserProfile profile) {
+        this.profile = profile;
+        if (profile != null) {
+            profile.setUser(this);
+        }
+    }
+
+    public List<MessageBoard> getSentMessages() {
+        return sentMessages;
+    }
+
+    public List<MessageBoard> getReceivedMessages() {
+        return receivedMessages;
+    }
 
     public String getRole() {
         return role;
@@ -67,46 +105,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getAirline() {
-        return airline;
-    }
-
-    public void setAirline(String airline) {
-        this.airline = airline;
     }
 
     public boolean isFirstLogin() {

@@ -1,6 +1,6 @@
 package com.assigndevelopers.airportluggagehandlingapi.service;
 
-import com.assigndevelopers.airportluggagehandlingapi.model.Message;
+import com.assigndevelopers.airportluggagehandlingapi.model.MessageBoard;
 import com.assigndevelopers.airportluggagehandlingapi.repository.MessageRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,19 +15,23 @@ public class MessageService {
         this.messageRepo = messageRepo;
     }
 
-    public Optional<Message> findById(Long messageId) {
+    public Optional<MessageBoard> findById(Long messageId) {
         return messageRepo.findById(messageId);
     }
 
-    public Optional<List<Message>> findByFrom(String role) {
-        return messageRepo.findByFrom(role);
+    public Optional<List<MessageBoard>> findBySenderRole(String role) {
+        return messageRepo.findBySenderRole(role);
     }
 
-    public List<Message> getAll() {
+    public Optional<List<MessageBoard>> findByRecipientRole(String role) {
+        return messageRepo.findByRecipientRole(role);
+    }
+
+    public List<MessageBoard> getAll() {
         return messageRepo.findAll();
     }
 
-    public void save(Message message) {
+    public void save(MessageBoard message) {
         messageRepo.save(message);
     }
 }

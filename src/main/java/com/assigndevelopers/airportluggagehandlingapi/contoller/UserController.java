@@ -5,7 +5,9 @@ import com.assigndevelopers.airportluggagehandlingapi.dto.LoginRequest;
 import com.assigndevelopers.airportluggagehandlingapi.dto.RegisterRequest;
 import com.assigndevelopers.airportluggagehandlingapi.dto.UserDTO;
 import com.assigndevelopers.airportluggagehandlingapi.model.User;
+import com.assigndevelopers.airportluggagehandlingapi.model.UserProfile;
 import com.assigndevelopers.airportluggagehandlingapi.service.UserService;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,20 +38,30 @@ public class UserController {
                     .body("User with this email already exists");
         }
 
-        User newUser = new User();
-
-        newUser.setEmail(registerRequest.getEmail());
-        newUser.setFirstname(registerRequest.getFirstname());
-        newUser.setLastname(registerRequest.getLastname());
-        newUser.setPassword(registerRequest.getPassword());
-        newUser.setRole(registerRequest.getRole());
-        newUser.setAirline(registerRequest.getAirline());
-        newUser.setUsername(registerRequest.getUsername());
-
-        userService.save(newUser);
+        User user = setUser(registerRequest);
+        userService.save(user);
 
         // Return new User with a 201 CREATED Status
-        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
+    private static @NonNull User setUser(RegisterRequest registerRequest) {
+        User user = new User();
+        UserProfile profile =  new UserProfile();
+
+        user.setRole(registerRequest.getRole());
+        user.setUsername(registerRequest.getUsername());
+        user.setPassword(registerRequest.getPassword());
+        user.setFirstLogin(true);
+
+        profile.setEmail(registerRequest.getEmail());
+        profile.setFirstname(registerRequest.getFirstname());
+        profile.setLastname(registerRequest.getLastname());
+        profile.setAirline(registerRequest.getAirline());
+        profile.setPhone(registerRequest.getPhone());
+
+        user.setProfile(profile);
+        return user;
     }
 
     @PostMapping("/login")
@@ -62,29 +74,26 @@ public class UserController {
                     .body(new AuthResult("Invalid username or password"));
         }
 
-        User user = userOpt.get();
+        AuthResult authResult = getAuthResult(userOpt.get());
+
+        return ResponseEntity.ok(authResult);
+    }
+
+    private static @NonNull AuthResult getAuthResult(User user) {
+        UserProfile profile = user.getProfile();
+
         UserDTO userDTO = new UserDTO(
-                user.getUsername(),
-                user.getEmail(),
                 user.getRole(),
-                user.getFirstname(),
-                user.getLastname(),
-                user.getAirline(),
-                user.isFirstLogin()
+                user.getUsername(),
+                user.isFirstLogin(),
+
+                profile.getEmail(),
+                profile.getPhone(),
+                profile.getFirstname(),
+                profile.getLastname(),
+                profile.getAirline()
         );
 
-        AuthResult authResult = new AuthResult(userDTO);
-
-        /*{
-              "success": true,
-              "user": {
-                "username": "admin01",
-                "role": "ADMIN",
-                "firstName": "John",
-                "lastName": "Doe",
-                "firstLogin": true
-              }
-            }*/
-        return ResponseEntity.ok(authResult);
+        return new AuthResult(userDTO);
     }
 }

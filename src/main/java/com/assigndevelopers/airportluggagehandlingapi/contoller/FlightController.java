@@ -2,7 +2,6 @@ package com.assigndevelopers.airportluggagehandlingapi.contoller;
 
 import com.assigndevelopers.airportluggagehandlingapi.dto.FlightDTO;
 import com.assigndevelopers.airportluggagehandlingapi.model.Flight;
-import com.assigndevelopers.airportluggagehandlingapi.repository.FlightRepository;
 import com.assigndevelopers.airportluggagehandlingapi.service.FlightService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,9 +37,7 @@ public class FlightController {
             Flight newFlight = new Flight();
 
             newFlight.setAirlineName(flight.getAirlineName());
-            newFlight.setFlightId(flight.getFlightId());
-            newFlight.setFlightId(flight.getFlightId());
-            newFlight.setFlightNumber(flight.getFlightNumber());
+            newFlight.setFlightCode(flight.getFlightCode());
             newFlight.setDepartureTime(flight.getDepartureTime());
             newFlight.setDestination(flight.getDestination());
             newFlight.setTerminal(flight.getTerminal());

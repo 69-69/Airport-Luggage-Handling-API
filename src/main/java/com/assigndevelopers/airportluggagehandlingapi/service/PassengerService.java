@@ -48,7 +48,7 @@ public class PassengerService {
 
         newPassenger.setFirstName(passenger.getFirstName());
         newPassenger.setLastName(passenger.getLastName());
-        newPassenger.setFlightNumber(passenger.getFlightNumber());
+        newPassenger.setFlightCode(passenger.getFlightNumber());
         newPassenger.setStatus(passenger.getStatus());
         newPassenger.setIdentification(String.valueOf(passenger.getIdNumber()));
         newPassenger.setIdentification(String.valueOf(passenger.getIdNumber()));

@@ -4,6 +4,8 @@ public class RegisterRequest {
     private String username;
     private String password;
     private String email;
+
+    private String phone;
     private String role;
     private String firstname;
     private String lastname;
@@ -13,10 +15,11 @@ public class RegisterRequest {
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String username, String password, String email, String role, String firstname, String lastname, String airline) {
+    public RegisterRequest(String role, String username, String password, String email, String phone, String firstname, String lastname, String airline) {
         this.username = username;
         this.password = password;
         this.email = email;
+        this.phone = phone;
         this.role = role;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -69,6 +72,14 @@ public class RegisterRequest {
 
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getAirline() {

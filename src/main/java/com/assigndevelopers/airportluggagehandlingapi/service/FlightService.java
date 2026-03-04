@@ -19,9 +19,10 @@ public class FlightService {
         return flightRepository.findById(id);
     }
 
-    public Optional<Flight> findByFlightNumber(String flightNumber){
+    // FlightNumber: 123456
+    /*public Optional<Flight> findByFlightNumber(String flightNumber){
         return flightRepository.findByFlightNumber(flightNumber);
-    }
+    }*/
 
     public Optional<Flight> getFlightByGate(String gate){
         return flightRepository.getFlightByGate(gate);

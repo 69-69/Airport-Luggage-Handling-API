@@ -12,17 +12,20 @@ public class Passenger {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String firstName;
+
+    @Column(nullable = false)
     private String lastName;
 
-    @Column(length =  6, nullable = false)
+    @Column(length =  6, nullable = false, unique = true)
     private String identification; // Passport or Driver License Number
 
-    @Column(length =  10, nullable = false)
-    private String ticketNumber;
+    /*@Column(length =  10, nullable = false, unique = true)
+    private String ticketNumber;*/
 
     @Column(length =  6)
-    private String flightNumber; // AA1234
+    private String flightCode; // AA1234
 
     private String status;
 
@@ -43,17 +46,40 @@ public class Passenger {
     @JsonManagedReference // This prevents infinite Loop
     private List<Bag> bags;
 
+    @Column(nullable = false)
+    private String createdAt;
+
+    private String updatedAt;
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public Passenger() {
     }
 
     @Autowired
-    public Passenger(String firstName, String lastName, String identification, String ticketNumber, String flightNumber, String status) {
+    public Passenger(String firstName, String lastName, String identification, String flightCode, String status, String createdAt, String updatedAt) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.identification = identification;
-        this.ticketNumber = ticketNumber;
-        this.flightNumber = flightNumber;
+        // this.ticketNumber = ticketNumber;
+        this.flightCode = flightCode;
         this.status = status;
+        this.createdAt=createdAt;
+        this.updatedAt=updatedAt;
     }
 
     public Long getId() {
@@ -104,20 +130,20 @@ public class Passenger {
         this.identification = identification;
     }
 
-    public String getTicketNumber() {
+    /*public String getTicketNumber() {
         return ticketNumber;
     }
 
     public void setTicketNumber(String ticketNumber) {
         this.ticketNumber = ticketNumber;
+    }*/
+
+    public String getFlightCode() {
+        return flightCode;
     }
 
-    public String getFlightNumber() {
-        return flightNumber;
-    }
-
-    public void setFlightNumber(String flightNumber) {
-        this.flightNumber = flightNumber;
+    public void setFlightCode(String flightNumber) {
+        this.flightCode = flightNumber;
     }
 
     public String getStatus() {

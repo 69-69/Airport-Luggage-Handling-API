@@ -1,14 +1,9 @@
 package com.assigndevelopers.airportluggagehandlingapi.dto;
 
-import com.assigndevelopers.airportluggagehandlingapi.model.Ticket;
-
-import java.util.List;
-
 public class FlightDTO {
     private String airlineName;
     private String destination;
-    private String flightId;
-    private String flightNumber;
+    private String flightCode;
     private String departureTime;
     private String terminal;
     private String gate;
@@ -17,11 +12,10 @@ public class FlightDTO {
     public FlightDTO() {
     }
 
-    public FlightDTO(String airlineName, String destination, String flightId, String flightNumber, String departureTime, String terminal, String gate) {
+    public FlightDTO(String airlineName, String destination, String flightCode, String departureTime, String terminal, String gate) {
         this.airlineName = airlineName;
         this.destination = destination;
-        this.flightId = flightId;
-        this.flightNumber = flightNumber;
+        this.flightCode = flightCode;
         this.departureTime = departureTime;
         this.terminal = terminal;
         this.gate = gate;
@@ -45,12 +39,12 @@ public class FlightDTO {
         this.destination = destination;
     }
 
-    public String getFlightId() {
-        return flightId;
+    public String getFlightCode() {
+        return flightCode;
     }
 
-    public void setFlightId(String flightId) {
-        this.flightId = flightId;
+    public void setFlightCode(String flightCode) {
+        this.flightCode = flightCode;
     }
 
     public String getDepartureTime() {
@@ -77,11 +71,4 @@ public class FlightDTO {
         this.gate = gate;
     }
 
-    public String getFlightNumber() {
-        return flightNumber;
-    }
-
-    public void setFlightNumber(String flightNumber) {
-        this.flightNumber = flightNumber;
-    }
 }

@@ -19,7 +19,7 @@ public class UserService {
     }
 
     public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByProfileEmail(email);
     }
 
     public Optional<User> findByUsernameAndPassword(String username, String password) {
@@ -27,7 +27,7 @@ public class UserService {
     }
 
     public Optional<User> findByEmailAndPassword(String email, String password) {
-        return   userRepository.findByEmailAndPassword(email, password);
+        return   userRepository.findByProfileEmailAndPassword(email, password);
     }
 
     public boolean checkPassword(User user, String password) {

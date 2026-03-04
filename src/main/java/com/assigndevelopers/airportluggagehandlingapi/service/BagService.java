@@ -24,6 +24,6 @@ public class BagService {
     }
 
     public Optional<Bag> findByTicketNumber(String ticketNumber) {
-        return bagRepository.findByTicketNumber(ticketNumber);
+        return bagRepository.findByPassengerTicketNumber(ticketNumber);
     }
 }
