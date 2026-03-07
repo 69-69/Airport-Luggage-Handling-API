@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long bagId;
 
     @Column(name = "ticket_number", length =  10, nullable = false, unique = true)
     private String number;
@@ -68,11 +68,11 @@ public class Ticket {
 
     // Getters and setters
     public Long getId() {
-        return id;
+        return bagId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId(Long bagId) {
+        this.bagId = bagId;
     }
 
     public String getNumber() {

@@ -9,11 +9,6 @@ import java.util.List;
 @Entity
 @Table(name = "_user")
 public class User {
-    // Using generated security password: 976adece-732e-41e4-b6f5-b584a9f00f20
-
-    /*@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;*/
 
     @Column(nullable = false)
     private String role;
@@ -38,14 +33,14 @@ public class User {
      *  ONE-TO-MANY (Sent Messages)
      */
     @OneToMany(mappedBy = "sender")
-    @JsonManagedReference
+    @JsonManagedReference("sender-username")
     private List<MessageBoard> sentMessages;
 
     /*
      *  ONE-TO-MANY (Received Messages)
      */
     @OneToMany(mappedBy = "recipient")
-    @JsonManagedReference
+    @JsonManagedReference("recipient-username")
     private List<MessageBoard> receivedMessages;
 
     @Column(nullable = false)
@@ -73,6 +68,14 @@ public class User {
         if (profile != null) {
             profile.setUser(this);
         }
+    }
+
+    public void setReceivedMessages(List<MessageBoard> receivedMessages) {
+        this.receivedMessages = receivedMessages;
+    }
+
+    public void setSentMessages(List<MessageBoard> sentMessages) {
+        this.sentMessages = sentMessages;
     }
 
     public List<MessageBoard> getSentMessages() {

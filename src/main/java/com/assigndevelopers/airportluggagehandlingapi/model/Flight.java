@@ -12,9 +12,6 @@ import java.util.List;
 
 @Entity
 public class Flight extends BaseEntity {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
 
     @Column(nullable = false, unique = true)
     private String airlineName;
@@ -42,7 +39,7 @@ public class Flight extends BaseEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-//    @JsonManagedReference
+    @JsonManagedReference("flight-bags")
     private List<Bag> bags;
 
     // Constructors

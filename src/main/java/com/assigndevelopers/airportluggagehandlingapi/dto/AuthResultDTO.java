@@ -14,4 +14,8 @@ public record AuthResultDTO(
     public static AuthResultDTO failure(String error) {
         return new AuthResultDTO(false, null, error);
     }
+
+    public static AuthResultDTO allUsers(UserDTO user) {
+        return new AuthResultDTO(false, user, null);
+    }
 }

@@ -3,26 +3,26 @@ package com.assigndevelopers.airportluggagehandlingapi.dto;
 import jakarta.validation.constraints.NotEmpty;
 
 public record RegisterDTO(
-        @NotEmpty(message="String username is required")
+        @NotEmpty(message="username is required")
         String username,
 
-        @NotEmpty(message="String password is required")
+        @NotEmpty(message="password is required")
         String password,
 
-        @NotEmpty(message="String email is required")
+        @NotEmpty(message="email is required")
         String email,
 
-        @NotEmpty(message="String phone is required")
+        @NotEmpty(message="phone is required")
         String phone,
 
-        @NotEmpty(message="String role is required")
+        @NotEmpty(message="role is required")
         String role,
 
-        @NotEmpty(message="String firstname is required")
-        String firstname,
+        @NotEmpty(message="first name is required")
+        String firstName,
 
-        @NotEmpty(message="String lastname is required")
-        String lastname,
+        @NotEmpty(message="last name is required")
+        String lastName,
 
         String airline
 

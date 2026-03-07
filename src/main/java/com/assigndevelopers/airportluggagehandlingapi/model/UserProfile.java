@@ -1,5 +1,6 @@
 package com.assigndevelopers.airportluggagehandlingapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,7 +22,7 @@ public class UserProfile extends BaseEntity {
     @Column(nullable = false)
     private String lastname;
 
-    @Column(length = 2)
+    @Column(length = 20)
     private String airline;
 
     @OneToOne
@@ -31,15 +32,8 @@ public class UserProfile extends BaseEntity {
             nullable = false,
             unique = true
     )
+    @JsonIgnore
     private User user;
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     // Constructors
     public UserProfile(){}
@@ -59,6 +53,14 @@ public class UserProfile extends BaseEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getEmail() {

@@ -21,7 +21,7 @@ public record PassengerDTO(
         @NotEmpty(message = "ticketNumber is required")
         String ticketNumber,
 
-        @NotEmpty(message = "status is required")
+        @NotEmpty(message = "isRead is required")
         String status
 ) {
 

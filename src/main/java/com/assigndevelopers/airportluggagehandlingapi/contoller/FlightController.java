@@ -1,20 +1,18 @@
 package com.assigndevelopers.airportluggagehandlingapi.contoller;
 
+import com.assigndevelopers.airportluggagehandlingapi.dto.ChangeGateDTO;
 import com.assigndevelopers.airportluggagehandlingapi.dto.FlightDTO;
 import com.assigndevelopers.airportluggagehandlingapi.model.Flight;
-import com.assigndevelopers.airportluggagehandlingapi.repository.FlightRepository;
 import com.assigndevelopers.airportluggagehandlingapi.service.FlightService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/flights")
@@ -33,7 +31,7 @@ public class FlightController {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Flight with gate " + dto.gate() + " already exists");
             }
 
-            Flight flight = flightService.save(dto);
+            Flight flight = flightService.create(dto);
 
             // Return new Flight Object with 201 CREATED Status
             return ResponseEntity.status(HttpStatus.CREATED).body(flight);
@@ -49,6 +47,26 @@ public class FlightController {
         Optional<Flight> flightOpt = flightService.findByFlightCode(flightCode);
 
         return flightOpt.map(ResponseEntity::ok).orElseGet(() -> flightOpt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build()));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> getByAirlineCodeAndGate(
+            @RequestParam String airlineCode,
+            @RequestParam String gate
+    ) {
+        List<Flight> flights = flightService.findByAirlineCodeAndGate(airlineCode, gate);
+        if (flights.isEmpty()) {
+            throw new RuntimeException("Flight with ID: " + airlineCode + " not found");
+        }
+
+        return ResponseEntity.ok(flights);
+    }
+
+    @PutMapping("/{flightCode}/gate")
+    public ResponseEntity<?> changeGate(@PathVariable String flightCode, @RequestBody ChangeGateDTO dto) {
+        flightService.changeGate(flightCode, dto);
+
+        return ResponseEntity.ok(Map.of("message", "Flight gate successfully changed"));
     }
 
     @GetMapping

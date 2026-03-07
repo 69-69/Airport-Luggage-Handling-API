@@ -1,14 +1,12 @@
 package com.assigndevelopers.airportluggagehandlingapi.service;
 
+import com.assigndevelopers.airportluggagehandlingapi.dto.ChangeGateDTO;
 import com.assigndevelopers.airportluggagehandlingapi.dto.FlightDTO;
 import com.assigndevelopers.airportluggagehandlingapi.model.Flight;
 import com.assigndevelopers.airportluggagehandlingapi.repository.FlightRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.beans.Transient;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,19 +19,19 @@ public class FlightService {
     }
 
     // FlightNumber: 123456
-    public Optional<Flight> findByFlightCode(String flightNumber){
+    public Optional<Flight> findByFlightCode(String flightNumber) {
         return flightRepository.findByFlightCode(flightNumber);
     }
 
-    public Optional<Flight> getFlightByGate(String gate){
-        return flightRepository.getFlightByGate(gate);
+    public Optional<Flight> getFlightByGate(String gate) {
+        return flightRepository.findFlightByGate(gate);
     }
 
-    public Optional<List<Flight>> getAllFlights(){
+    public Optional<List<Flight>> getAllFlights() {
         return Optional.of(flightRepository.findAll());
     }
 
-    public Flight save(FlightDTO dto){
+    public Flight create(FlightDTO dto) {
         // Create a new dto from the provided flightDTO
         // String flightAbbrev = dto.getAirlineName().substring(0, 2).toUpperCase();
         // String flightCode = flightAbbrev + String.format("%04d", dto.getFlightId());
@@ -53,13 +51,39 @@ public class FlightService {
     }
 
     @Transactional
-    public void deleteByFlightCode(String code){
+    public void deleteByFlightCode(String code) {
 
         Flight flight = flightRepository.findByFlightCode(code)
                 .orElseThrow(
-                        ()-> new RuntimeException("Flight with code: " + code + " not found")
+                        () -> new RuntimeException("Flight with code: " + code + " not found")
                 );
 
         flightRepository.delete(flight);
+    }
+
+    public void changeGate(String flightCode, ChangeGateDTO dto) {
+        Flight flight = flightRepository.findByFlightCode(flightCode)
+                .orElseThrow(
+                        () -> new RuntimeException("Flight with ID: " + flightCode + " not found")
+                );
+
+        flight.setFlightCode(dto.gate());
+        flight.setTerminal(dto.terminal());
+
+        flightRepository.save(flight);
+    }
+
+    public List<Flight> findByAirlineCodeAndGate(String airlineCode, String gate) {
+
+        List<Flight> flights = flightRepository
+                .findByFlightCodeStartingWithAndGate(airlineCode, gate);
+
+        if (flights.isEmpty()) {
+            throw new RuntimeException(
+                    "No flights found for airline code: " + airlineCode + " at gate: " + gate
+            );
+        }
+
+        return flights;
     }
 }

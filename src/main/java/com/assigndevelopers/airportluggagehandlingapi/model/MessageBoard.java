@@ -1,13 +1,13 @@
 package com.assigndevelopers.airportluggagehandlingapi.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 @Table(name = "message_board")
-public class MessageBoard extends  BaseEntity {
+public class MessageBoard extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +21,8 @@ public class MessageBoard extends  BaseEntity {
             referencedColumnName = "username",
             nullable = false
     )
-    @JsonBackReference
+//    @JsonIgnore
+    @JsonBackReference("message-sender")
     private User sender; // from
 
     @ManyToOne
@@ -30,11 +31,12 @@ public class MessageBoard extends  BaseEntity {
             referencedColumnName = "username",
             nullable = false
     )
-    @JsonBackReference
+//    @JsonIgnore
+    @JsonBackReference("message-recipient")
     private User recipient; // to
 
     @Column(nullable = false)
-    private Boolean isRead;
+    private boolean isRead;
 
     @Column(nullable = false)
     private String airline;
@@ -71,7 +73,7 @@ public class MessageBoard extends  BaseEntity {
         return recipient;
     }
 
-    public Boolean getRead() {
+    public boolean getRead() {
         return isRead;
     }
 

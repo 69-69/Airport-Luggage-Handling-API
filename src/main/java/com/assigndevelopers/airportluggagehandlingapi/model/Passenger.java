@@ -8,19 +8,16 @@ import java.util.List;
 
 @Entity
 public class Passenger extends BaseEntity {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
+
+    @Id
+    @Column(length =  6, nullable = false, unique = true)
+    private String identification; // Passport or Driver License Number
 
     @Column(nullable = false)
     private String firstName;
 
     @Column(nullable = false)
     private String lastName;
-
-    @Id
-    @Column(length =  6, nullable = false, unique = true)
-    private String identification; // Passport or Driver License Number
 
     @Column(length =  10, nullable = false, unique = true)
     private String ticketNumber;
@@ -36,7 +33,7 @@ public class Passenger extends BaseEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-//    @JsonManagedReference // This prevents infinite Loop
+    @JsonManagedReference("passenger-bags") // This prevents infinite Loop
     private List<Bag> bags;
 
     public Passenger() {
@@ -62,11 +59,11 @@ public class Passenger extends BaseEntity {
 
 
 //    public Long getId() {
-//        return id;
+//        return bagId;
 //    }
 
-//    public void setId(Long id) {
-//        this.id = id;
+//    public void setId(Long bagId) {
+//        this.bagId = bagId;
 //    }
 
 //    public Ticket getTicket() {

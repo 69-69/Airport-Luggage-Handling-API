@@ -66,7 +66,7 @@ public class PassengerController {
     public ResponseEntity<?> delete(@PathVariable String id) {
         passengerService.delete(id);
 
-        return ResponseEntity.ok(Map.of("message", "Passenger with id: " + id + " deleted"));
+        return ResponseEntity.ok(Map.of("message", "Passenger with bagId: " + id + " deleted"));
     }
 
 }

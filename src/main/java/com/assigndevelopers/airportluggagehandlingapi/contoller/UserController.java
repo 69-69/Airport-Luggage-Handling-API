@@ -3,15 +3,15 @@ package com.assigndevelopers.airportluggagehandlingapi.contoller;
 import com.assigndevelopers.airportluggagehandlingapi.dto.AuthResultDTO;
 import com.assigndevelopers.airportluggagehandlingapi.dto.LoginDTO;
 import com.assigndevelopers.airportluggagehandlingapi.dto.RegisterDTO;
-import com.assigndevelopers.airportluggagehandlingapi.dto.UserDTO;
+import com.assigndevelopers.airportluggagehandlingapi.dto.UpdatePasswordDTO;
 import com.assigndevelopers.airportluggagehandlingapi.model.User;
-import com.assigndevelopers.airportluggagehandlingapi.model.UserProfile;
 import com.assigndevelopers.airportluggagehandlingapi.service.UserService;
-import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -23,45 +23,13 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
-    public String index() {
-        return "Hello World";
-    }
-
     @PostMapping("register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO) {
-        Optional<User> userOpt = userService.findByEmail(registerDTO.email());
 
-        if (userOpt.isPresent()) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body("User with this email already exists");
-        }
-
-        User user = setUser(registerDTO);
-        userService.save(user);
+        User user = userService.create(registerDTO);
 
         // Return new User with a 201 CREATED Status
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
-    }
-
-    private static @NonNull User setUser(RegisterDTO registerDTO) {
-        User user = new User();
-        UserProfile profile = new UserProfile();
-
-        user.setRole(registerDTO.role());
-        user.setUsername(registerDTO.username());
-        user.setPassword(registerDTO.password());
-        user.setFirstLogin(true);
-
-        profile.setEmail(registerDTO.email());
-        profile.setFirstname(registerDTO.firstname());
-        profile.setLastname(registerDTO.lastname());
-        profile.setAirline(registerDTO.airline());
-        profile.setPhone(registerDTO.phone());
-
-        user.setProfile(profile);
-        return user;
     }
 
     @PostMapping("/login")
@@ -74,25 +42,32 @@ public class UserController {
                     .body(AuthResultDTO.failure("Invalid username or password"));
         }
 
-        AuthResultDTO authResultDTO = getAuthResult(userOpt.get());
+        AuthResultDTO authResultDTO = userService.getAuthResult(userOpt.get(), true);
 
         return ResponseEntity.ok(authResultDTO);
     }
 
-    private static @NonNull AuthResultDTO getAuthResult(User user) {
-        UserProfile profile = user.getProfile();
+    @GetMapping
+    public ResponseEntity<List<AuthResultDTO>> getAll() {
+        var users = userService.getUsers();
 
-        UserDTO userDTO = new UserDTO(
-                user.getUsername(),
-                profile.getEmail(),
-                profile.getPhone(),
-                user.getRole(),
-                profile.getFirstname(),
-                profile.getLastname(),
-                profile.getAirline(),
-                user.isFirstLogin()
-        );
+        return users.map(ResponseEntity::ok)
+                .orElseThrow(
+                        () -> new RuntimeException("No users exist")
+                );
+    }
 
-        return AuthResultDTO.success(userDTO);
+    @PutMapping("/{username}/password")
+    public ResponseEntity<?> updatePassword(@PathVariable String username, @RequestBody UpdatePasswordDTO dto) {
+        userService.updatePassword(username, dto.newPassword(), dto.firstLogin());
+
+        return ResponseEntity.ok(Map.of("message", "User password successfully updated"));
+    }
+
+    @DeleteMapping("/{phone}")
+    public ResponseEntity<?> delete(@PathVariable String phone) {
+        userService.deleteByPhone(phone);
+
+        return ResponseEntity.ok(Map.of("message", "User successfully deleted"));
     }
 }

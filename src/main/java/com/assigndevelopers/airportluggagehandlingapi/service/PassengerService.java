@@ -69,7 +69,7 @@ public class PassengerService {
     public void delete(String id) {
         Passenger passenger = passengerRepository.findById(id)
                 .orElseThrow(
-                        () -> new RuntimeException("Passenger with id: " + id + " deleted")
+                        () -> new RuntimeException("Passenger with bagId: " + id + " deleted")
                 );
 
         passengerRepository.delete(passenger);

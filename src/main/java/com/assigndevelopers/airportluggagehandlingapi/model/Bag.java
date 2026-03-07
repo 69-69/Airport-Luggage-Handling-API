@@ -12,34 +12,29 @@ public class Bag extends  BaseEntity {
     @Column(length = 6, nullable = false, unique = true)
     private Long id; // 123456
 
-//    @Column(length = 6, nullable = false, unique = true)
-//    private String bagId;
-//
-//    @Column(length = 10, nullable = false, unique = true)
-//    private String ticketNumber;
-
     @Column(nullable = false)
     private String location; // Bag Status
 
     // Bags are linked to a ticket (Many bags can belong to one ticket)
     @ManyToOne
     @JoinColumn(
-            name = "ticketNumber",
-            referencedColumnName = "ticketNumber",
+            name = "ticket_number",       // column in Bag table
+            referencedColumnName = "ticketNumber", // property in Passenger entity
             nullable = false
     )
-//    @JsonBackReference // Prevents Child class (Bag) from serializing Parent class (Passenger)
-    @JsonIgnore
+    @JsonBackReference("passenger-bags")
+//    @JsonIgnore
     private Passenger passenger;
 
     // New here
     @ManyToOne
     @JoinColumn(
-            name = "flight_id",
+            name = "flight_code", // column in Bag table
+            referencedColumnName = "flightCode", // property in Flight entity
             nullable = false
     )
-//    @JsonBackReference
-    @JsonIgnore
+    @JsonBackReference("flight-bags")
+//    @JsonIgnore
     private Flight flight;
 
     // Constructors

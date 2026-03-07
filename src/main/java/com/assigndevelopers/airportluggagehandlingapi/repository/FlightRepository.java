@@ -3,6 +3,7 @@ package com.assigndevelopers.airportluggagehandlingapi.repository;
 import com.assigndevelopers.airportluggagehandlingapi.model.Flight;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface FlightRepository extends JpaRepository<Flight, String> {
@@ -11,7 +12,9 @@ public interface FlightRepository extends JpaRepository<Flight, String> {
 
     Optional<Flight> findByFlightCode(String flightCode); // AA1234
 
-    Optional<Flight> getFlightByGate(String gate);
+    List<Flight> findByFlightCodeStartingWithAndGate(String airlineCode, String gate);
+
+    Optional<Flight> findFlightByGate(String gate);
 
     void deleteByFlightCode(String flightCode);
 }
