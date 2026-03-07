@@ -5,11 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface PassengerRepository extends JpaRepository<Passenger, Long> {
+public interface PassengerRepository extends JpaRepository<Passenger, String> {
 
-    Optional<Passenger> findByTicketNumber(String ticketTicketNumber);
+    Optional<Passenger> findByFlightCode(String ticketTicketNumber);
 
-    // Optional<Passenger> findByFlightNumber(String flightNumber);
+     Optional<Passenger> findByTicketNumber(String flightNumber);
 
     Optional<Passenger> findByIdentification(String idNumber);
 }

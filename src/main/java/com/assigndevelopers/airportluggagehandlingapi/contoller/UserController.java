@@ -1,8 +1,8 @@
 package com.assigndevelopers.airportluggagehandlingapi.contoller;
 
-import com.assigndevelopers.airportluggagehandlingapi.dto.AuthResult;
-import com.assigndevelopers.airportluggagehandlingapi.dto.LoginRequest;
-import com.assigndevelopers.airportluggagehandlingapi.dto.RegisterRequest;
+import com.assigndevelopers.airportluggagehandlingapi.dto.AuthResultDTO;
+import com.assigndevelopers.airportluggagehandlingapi.dto.LoginDTO;
+import com.assigndevelopers.airportluggagehandlingapi.dto.RegisterDTO;
 import com.assigndevelopers.airportluggagehandlingapi.dto.UserDTO;
 import com.assigndevelopers.airportluggagehandlingapi.model.User;
 import com.assigndevelopers.airportluggagehandlingapi.model.UserProfile;
@@ -29,8 +29,8 @@ public class UserController {
     }
 
     @PostMapping("register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
-        Optional<User> userOpt = userService.findByEmail(registerRequest.getFirstname());
+    public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO) {
+        Optional<User> userOpt = userService.findByEmail(registerDTO.email());
 
         if (userOpt.isPresent()) {
             return ResponseEntity
@@ -38,62 +38,61 @@ public class UserController {
                     .body("User with this email already exists");
         }
 
-        User user = setUser(registerRequest);
+        User user = setUser(registerDTO);
         userService.save(user);
 
         // Return new User with a 201 CREATED Status
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
-    private static @NonNull User setUser(RegisterRequest registerRequest) {
+    private static @NonNull User setUser(RegisterDTO registerDTO) {
         User user = new User();
-        UserProfile profile =  new UserProfile();
+        UserProfile profile = new UserProfile();
 
-        user.setRole(registerRequest.getRole());
-        user.setUsername(registerRequest.getUsername());
-        user.setPassword(registerRequest.getPassword());
+        user.setRole(registerDTO.role());
+        user.setUsername(registerDTO.username());
+        user.setPassword(registerDTO.password());
         user.setFirstLogin(true);
 
-        profile.setEmail(registerRequest.getEmail());
-        profile.setFirstname(registerRequest.getFirstname());
-        profile.setLastname(registerRequest.getLastname());
-        profile.setAirline(registerRequest.getAirline());
-        profile.setPhone(registerRequest.getPhone());
+        profile.setEmail(registerDTO.email());
+        profile.setFirstname(registerDTO.firstname());
+        profile.setLastname(registerDTO.lastname());
+        profile.setAirline(registerDTO.airline());
+        profile.setPhone(registerDTO.phone());
 
         user.setProfile(profile);
         return user;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResult> login(@RequestBody LoginRequest loginRequest) {
-        Optional<User> userOpt = userService.findByUsername(loginRequest.getUsername());
+    public ResponseEntity<AuthResultDTO> login(@RequestBody LoginDTO loginDTO) {
+        Optional<User> userOpt = userService.findByUsername(loginDTO.username());
 
-        if (userOpt.isEmpty() || !userService.checkPassword(userOpt.get(), loginRequest.getPassword())) {
+        if (userOpt.isEmpty() || !userService.checkPassword(userOpt.get(), loginDTO.password())) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new AuthResult("Invalid username or password"));
+                    .body(AuthResultDTO.failure("Invalid username or password"));
         }
 
-        AuthResult authResult = getAuthResult(userOpt.get());
+        AuthResultDTO authResultDTO = getAuthResult(userOpt.get());
 
-        return ResponseEntity.ok(authResult);
+        return ResponseEntity.ok(authResultDTO);
     }
 
-    private static @NonNull AuthResult getAuthResult(User user) {
+    private static @NonNull AuthResultDTO getAuthResult(User user) {
         UserProfile profile = user.getProfile();
 
         UserDTO userDTO = new UserDTO(
-                user.getRole(),
                 user.getUsername(),
-                user.isFirstLogin(),
-
                 profile.getEmail(),
                 profile.getPhone(),
+                user.getRole(),
                 profile.getFirstname(),
                 profile.getLastname(),
-                profile.getAirline()
+                profile.getAirline(),
+                user.isFirstLogin()
         );
 
-        return new AuthResult(userDTO);
+        return AuthResultDTO.success(userDTO);
     }
 }

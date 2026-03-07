@@ -4,11 +4,13 @@ import com.assigndevelopers.airportluggagehandlingapi.dto.PassengerDTO;
 import com.assigndevelopers.airportluggagehandlingapi.model.Passenger;
 import com.assigndevelopers.airportluggagehandlingapi.service.PassengerService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -21,26 +23,28 @@ public class PassengerController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addPassenger(@RequestBody PassengerDTO passenger) {
-        passengerService.save(passenger);
+    public ResponseEntity<?> add(@Valid @RequestBody PassengerDTO dto) {
+        try {
+            Optional<Passenger> flightOpt = passengerService.findByIdNumber(dto.idNumber());
+            if (flightOpt.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Passenger with ID " + dto.idNumber() + " already exists");
+            }
 
-        return ResponseEntity.ok().build();
-    }
+            Passenger passenger = passengerService.save(dto);
 
-    @DeleteMapping("/{passenger_id}")
-    public void deletePassenger(@PathVariable String passengerId) {
-        Optional<Passenger> passengerOpt = passengerService.findById(Long.valueOf(passengerId));
-        if (passengerOpt.isPresent()) {
-            passengerService.delete(passengerOpt.get()); // This will cascade delete ticket and bags
-        } else {
-            throw new EntityNotFoundException("Passenger not found");
+            // Return new Passenger Object with 201 CREATED Status
+            return ResponseEntity.status(HttpStatus.CREATED).body(passenger);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("An error occurred while adding the dto: " + e.getMessage());
         }
     }
 
     @GetMapping
-    public ResponseEntity<List<Passenger>> getAllPassengers() {
+    public ResponseEntity<List<Passenger>> get() {
         Optional<List<Passenger>> passengers = passengerService.getAll();
-        if (passengers.isEmpty() || !passengers.get().isEmpty()) {
+        if (passengers.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -50,11 +54,19 @@ public class PassengerController {
     }
 
     @GetMapping("/{ticketNumber}")
-    public ResponseEntity<Passenger> getPassenger(@PathVariable String ticketNumber) {
+    public ResponseEntity<Passenger> getByTicket(@PathVariable String ticketNumber) {
         Optional<Passenger> passengerOpt = passengerService.findByTicketNumber(ticketNumber);
         if (passengerOpt.isPresent()) {
             return ResponseEntity.ok().body(passengerOpt.get());
         }
         throw new EntityNotFoundException("Passenger not found");
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable String id) {
+        passengerService.delete(id);
+
+        return ResponseEntity.ok(Map.of("message", "Passenger with id: " + id + " deleted"));
+    }
+
 }

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity(name = "user_profile")
-public class UserProfile {
+public class UserProfile extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +21,7 @@ public class UserProfile {
     @Column(nullable = false)
     private String lastname;
 
-    @Column(length = 2, nullable = false)
+    @Column(length = 2)
     private String airline;
 
     @OneToOne
@@ -32,27 +32,6 @@ public class UserProfile {
             unique = true
     )
     private User user;
-
-    @Column(nullable = false)
-    private String createdAt;
-
-    private String updatedAt;
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 
     public User getUser() {
         return user;
@@ -66,14 +45,12 @@ public class UserProfile {
     public UserProfile(){}
 
     @Autowired
-    public UserProfile(String email, String phone, String firstname, String lastname, String airline, String createdAt, String updatedAt) {
+    public UserProfile(String email, String phone, String firstname, String lastname, String airline) {
         this.email = email;
         this.phone = phone;
         this.firstname = firstname;
         this.lastname = lastname;
         this.airline = airline;
-        this.createdAt=createdAt;
-        this.updatedAt=updatedAt;
     }
 
     public Long getId() {

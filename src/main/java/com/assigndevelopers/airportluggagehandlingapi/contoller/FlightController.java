@@ -2,12 +2,18 @@ package com.assigndevelopers.airportluggagehandlingapi.contoller;
 
 import com.assigndevelopers.airportluggagehandlingapi.dto.FlightDTO;
 import com.assigndevelopers.airportluggagehandlingapi.model.Flight;
+import com.assigndevelopers.airportluggagehandlingapi.repository.FlightRepository;
 import com.assigndevelopers.airportluggagehandlingapi.service.FlightService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -20,61 +26,43 @@ public class FlightController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addFlight(@RequestBody FlightDTO flight) {
+    public ResponseEntity<?> add(@Valid @RequestBody FlightDTO dto) {
         try {
-            Optional<Flight> flightOpt = flightService.getFlightByGate(flight.getGate());
+            Optional<Flight> flightOpt = flightService.getFlightByGate(dto.gate());
             if (flightOpt.isPresent()) {
-                return ResponseEntity
-                        .status(HttpStatus.CONFLICT)
-                        .body("Flight with gate " + flight.getGate() + " already exists");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Flight with gate " + dto.gate() + " already exists");
             }
 
-            // Create a new flight from the provided flightDTO
-            // String flightAbbrev = flight.getAirlineName().substring(0, 2).toUpperCase();
-            // String flightNumber = flightAbbrev + String.format("%04d", flight.getFlightId());
-
-            // Create a new flight from the provided flightDTO
-            Flight newFlight = new Flight();
-
-            newFlight.setAirlineName(flight.getAirlineName());
-            newFlight.setFlightCode(flight.getFlightCode());
-            newFlight.setDepartureTime(flight.getDepartureTime());
-            newFlight.setDestination(flight.getDestination());
-            newFlight.setTerminal(flight.getTerminal());
-            newFlight.setGate(flight.getGate());
-
-            flightService.save(newFlight);
+            Flight flight = flightService.save(dto);
 
             // Return new Flight Object with 201 CREATED Status
-            return ResponseEntity.status(HttpStatus.CREATED).body(newFlight);
+            return ResponseEntity.status(HttpStatus.CREATED).body(flight);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body("An error occurred while adding the flight: " + e.getMessage());
+                    .body("An error occurred while adding the dto: " + e.getMessage());
         }
     }
 
-    @GetMapping("/{flightNumber}")
-    public ResponseEntity<Flight> getFlight(@PathVariable String flightNumber) {
-        Optional<Flight> flightOpt = flightService.getFlightByGate(flightNumber);
-        return flightOpt
-                .map(ResponseEntity::ok)
-                .orElseGet(
-                        () -> flightOpt.map(ResponseEntity::ok).orElseGet(
-                                () -> ResponseEntity.notFound().build()
-                        )
-                );
+    @GetMapping("/{flightCode}")
+    public ResponseEntity<Flight> getByCode(@PathVariable String flightCode) {
+        Optional<Flight> flightOpt = flightService.findByFlightCode(flightCode);
+
+        return flightOpt.map(ResponseEntity::ok).orElseGet(() -> flightOpt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build()));
     }
 
     @GetMapping
-    public ResponseEntity<List<Flight>> getFlights() {
+    public ResponseEntity<List<Flight>> get() {
         Optional<List<Flight>> flightOpt = flightService.getAllFlights();
 
-        return flightOpt
-                .map(ResponseEntity::ok)
-                .orElseGet(
-                        () -> ResponseEntity.notFound().build()
-                );
+        return flightOpt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @DeleteMapping("/{flightCode}")
+    public ResponseEntity<?> delete(@PathVariable String flightCode) {
+
+        flightService.deleteByFlightCode(flightCode);
+
+        return ResponseEntity.ok(Map.of("message", "Flight with code: " + flightCode + " deleted"));
+    }
 }

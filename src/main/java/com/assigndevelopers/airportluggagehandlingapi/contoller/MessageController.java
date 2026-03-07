@@ -28,11 +28,11 @@ public class MessageController {
         try {
             MessageBoard newMessage = new MessageBoard();
 
-            User sender = userRepository.findByUsername(message.getFrom()).get();
-            User recipient = userRepository.findByUsername(message.getTo()).get();
+            User sender = userRepository.findByUsername(message.from()).get();
+            User recipient = userRepository.findByUsername(message.to()).get();
 
-            newMessage.setMessage(message.getMessage());
-            newMessage.setAirline(message.getAirline());
+            newMessage.setMessage(message.message());
+            newMessage.setAirline(message.airline());
             newMessage.setRecipient(recipient);
             newMessage.setSender(sender);
             newMessage.setRead(false);

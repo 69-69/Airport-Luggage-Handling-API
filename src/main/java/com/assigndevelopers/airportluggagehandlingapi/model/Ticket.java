@@ -1,3 +1,4 @@
+/*
 package com.assigndevelopers.airportluggagehandlingapi.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -25,7 +26,8 @@ public class Ticket {
     // One Ticket have One Passenger
     @OneToOne
     @JoinColumn(
-            name = "passenger_id",
+            name = "identification",
+            referencedColumnName = "identification",
             nullable = false
     )
     private Passenger passenger;
@@ -98,3 +100,4 @@ public class Ticket {
     }
 
 }
+*/

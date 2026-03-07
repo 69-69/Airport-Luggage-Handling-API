@@ -1,72 +1,28 @@
 package com.assigndevelopers.airportluggagehandlingapi.dto;
 
-public class PassengerDTO {
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
-    private String firstName;
-    private String lastName;
-    private String idNumber;
-    private String ticketNumber;
-    private String flightNumber;
-    private String status;
+public record PassengerDTO(
+        @Size(max = 6)
+        String flightCode,
 
-    public PassengerDTO() {
-    }
+        @NotEmpty(message = "firstName is required")
+        String firstName,
 
-    public PassengerDTO(String firstName, String lastName, String idNumber, String ticketNumber, String flightNumber, String status) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.idNumber = idNumber;
-        this.ticketNumber = ticketNumber;
-        this.flightNumber = flightNumber;
-        this.status = status;
-    }
+        @NotEmpty(message = "lastName is required")
+        String lastName,
 
+        @Size(max = 6)
+        @NotEmpty(message = "idNumber is required")
+        @Size(max = 10)
+        String idNumber,
 
-    public String getFirstName() {
-        return firstName;
-    }
+        @NotEmpty(message = "ticketNumber is required")
+        String ticketNumber,
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+        @NotEmpty(message = "status is required")
+        String status
+) {
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getIdNumber() {
-        return idNumber;
-    }
-
-    public void setIdNumber(String idNumber) {
-        this.idNumber = idNumber;
-    }
-
-    public String getTicketNumber() {
-        return ticketNumber;
-    }
-
-    public void setTicketNumber(String ticketNumber) {
-        this.ticketNumber = ticketNumber;
-    }
-
-    public String getFlightNumber() {
-        return flightNumber;
-    }
-
-    public void setFlightNumber(String flightNumber) {
-        this.flightNumber = flightNumber;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }

@@ -3,6 +3,7 @@ package com.assigndevelopers.airportluggagehandlingapi.service;
 import com.assigndevelopers.airportluggagehandlingapi.dto.PassengerDTO;
 import com.assigndevelopers.airportluggagehandlingapi.model.Passenger;
 import com.assigndevelopers.airportluggagehandlingapi.repository.PassengerRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,38 +30,48 @@ public class PassengerService {
         return Optional.of(passengers);
     }
 
-    public Optional<Passenger> findById(Long id) {
+    public Optional<Passenger> findById(String id) {
         return passengerRepository.findById(id);
     }
 
-    public Optional<Passenger> findByTicketNumber(String ticketNumber) {
-        return passengerRepository.findByTicketNumber(ticketNumber);
+    public Optional<Passenger> findByFlightCode(String ticketNumber) {
+        return passengerRepository.findByFlightCode(ticketNumber);
     }
 
     // This is 6 digits Identification number from Passport or Driver License
-    public Passenger findByIdNumber(String flightNumber) {
-        Optional<Passenger> passenger = passengerRepository.findByIdentification(flightNumber);
-        return passenger.orElse(null);
+    public Optional<Passenger> findByTicketNumber(String flightNumber) {
+        return passengerRepository.findByTicketNumber(flightNumber);
     }
 
-    public void save(PassengerDTO passenger) {
-        Passenger newPassenger = new Passenger();
+    // This is 6 digits Identification number from Passport or Driver License
+    public Optional<Passenger> findByIdNumber(String flightNumber) {
+        return passengerRepository.findByIdentification(flightNumber);
+    }
 
-        newPassenger.setFirstName(passenger.getFirstName());
-        newPassenger.setLastName(passenger.getLastName());
-        newPassenger.setFlightCode(passenger.getFlightNumber());
-        newPassenger.setStatus(passenger.getStatus());
-        newPassenger.setIdentification(String.valueOf(passenger.getIdNumber()));
-        newPassenger.setIdentification(String.valueOf(passenger.getIdNumber()));
+    public Passenger save(PassengerDTO dto) {
+        Passenger passenger = new Passenger();
 
-        passengerRepository.save(newPassenger);
+        passenger.setFirstName(dto.firstName());
+        passenger.setLastName(dto.lastName());
+        passenger.setFlightCode(dto.flightCode());
+        passenger.setStatus(dto.status());
+        passenger.setIdentification(dto.idNumber());
+        passenger.setTicketNumber(dto.ticketNumber());
+
+        return passengerRepository.save(passenger);
     }
 
     Optional<Passenger> update(Passenger passenger) {
         return Optional.of(passengerRepository.save(passenger));
     }
 
-    public void delete(Passenger passenger) {
+    @Transactional
+    public void delete(String id) {
+        Passenger passenger = passengerRepository.findById(id)
+                .orElseThrow(
+                        () -> new RuntimeException("Passenger with id: " + id + " deleted")
+                );
+
         passengerRepository.delete(passenger);
     }
 }

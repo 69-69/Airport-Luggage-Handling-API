@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 @Table(name = "message_board")
-public class MessageBoard {
+public class MessageBoard extends  BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,22 +39,18 @@ public class MessageBoard {
     @Column(nullable = false)
     private String airline;
 
-    @Column(nullable = false)
-    private String createdAt;
-
     // Constructors
     public MessageBoard() {
     }
 
     @Autowired
     public MessageBoard(String message, User sender, User recipient,
-                        Boolean isRead, String airline, String createdAt) {
+                        Boolean isRead, String airline) {
         this.message = message;
         this.sender = sender;
         this.recipient = recipient;
         this.isRead = isRead;
         this.airline = airline;
-        this.createdAt = createdAt;
     }
 
     // ===== Getters & Setters =====
@@ -83,10 +79,6 @@ public class MessageBoard {
         return airline;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
     public void setMessage(String message) {
         this.message = message;
     }
@@ -107,7 +99,4 @@ public class MessageBoard {
         this.airline = airline;
     }
 
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
 }

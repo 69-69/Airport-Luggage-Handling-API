@@ -23,7 +23,7 @@ public class BagService {
         return bagRepository.findById(id);
     }
 
-    public Optional<Bag> findByTicketNumber(String ticketNumber) {
-        return bagRepository.findByPassengerTicketNumber(ticketNumber);
+    public Optional<Bag> findByPassengerID(String ticketNumber) {
+        return bagRepository.findByPassengerIdentification(ticketNumber);
     }
 }

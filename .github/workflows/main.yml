@@ -27,4 +27,15 @@ jobs:
           mvn clean
           mvn -B package --file pom.xml
 
+      # Build Docker Image & Publish to DockerHub
+      - name: Build Docker Image
+        uses: actions/build-push-action@v2
+        with:
+          context: .
+          dockerfile: Dockerfile
+          push: false # Uncheck this to 'TRUE' push to Docker Hub
+          tags:
+
+
+
 

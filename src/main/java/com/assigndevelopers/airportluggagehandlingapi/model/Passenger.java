@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @Entity
-public class Passenger {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Passenger extends BaseEntity {
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
 
     @Column(nullable = false)
     private String firstName;
@@ -18,24 +18,17 @@ public class Passenger {
     @Column(nullable = false)
     private String lastName;
 
+    @Id
     @Column(length =  6, nullable = false, unique = true)
     private String identification; // Passport or Driver License Number
 
-    /*@Column(length =  10, nullable = false, unique = true)
-    private String ticketNumber;*/
+    @Column(length =  10, nullable = false, unique = true)
+    private String ticketNumber;
 
     @Column(length =  6)
     private String flightCode; // AA1234
 
     private String status;
-
-    // One Passenger has One Ticket
-    @OneToOne(
-            mappedBy = "passenger",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private Ticket ticket;
 
     // One Passenger have Many Bags
     @OneToMany(
@@ -43,59 +36,53 @@ public class Passenger {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @JsonManagedReference // This prevents infinite Loop
+//    @JsonManagedReference // This prevents infinite Loop
     private List<Bag> bags;
-
-    @Column(nullable = false)
-    private String createdAt;
-
-    private String updatedAt;
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 
     public Passenger() {
     }
 
     @Autowired
-    public Passenger(String firstName, String lastName, String identification, String flightCode, String status, String createdAt, String updatedAt) {
+    public Passenger(String firstName, String lastName, String identification, String flightCode, String status, String ticketNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.identification = identification;
-        // this.ticketNumber = ticketNumber;
         this.flightCode = flightCode;
         this.status = status;
-        this.createdAt=createdAt;
-        this.updatedAt=updatedAt;
+        this.ticketNumber = ticketNumber;
     }
 
-    public Long getId() {
-        return id;
+    // One Passenger has One Ticket
+//    @OneToOne(
+//            mappedBy = "passenger",
+//            cascade = CascadeType.ALL,
+//            orphanRemoval = true
+//    )
+//    private Ticket ticket;
+
+
+//    public Long getId() {
+//        return id;
+//    }
+
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
+
+//    public Ticket getTicket() {
+//        return ticket;
+//    }
+
+//    public void setTicket(Ticket ticket) {
+//        this.ticket = ticket;
+//    }
+
+    public String getTicketNumber() {
+        return ticketNumber;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Ticket getTicket() {
-        return ticket;
-    }
-
-    public void setTicket(Ticket ticket) {
-        this.ticket = ticket;
+    public void setTicketNumber(String ticketNumber) {
+        this.ticketNumber = ticketNumber;
     }
 
     public List<Bag> getBags() {
