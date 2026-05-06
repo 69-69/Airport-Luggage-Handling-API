@@ -1,8 +1,9 @@
 package com.assigndevelopers.airportluggagehandlingapi.service;
 
 import com.assigndevelopers.airportluggagehandlingapi.dto.MessageDTO;
+import com.assigndevelopers.airportluggagehandlingapi.dto.MessageResponseDTO;
 import com.assigndevelopers.airportluggagehandlingapi.dto.MsgResponseDTO;
-import com.assigndevelopers.airportluggagehandlingapi.model.MessageBoard;
+import com.assigndevelopers.airportluggagehandlingapi.model.Message;
 import com.assigndevelopers.airportluggagehandlingapi.model.User;
 import com.assigndevelopers.airportluggagehandlingapi.repository.MessageRepository;
 import com.assigndevelopers.airportluggagehandlingapi.repository.UserRepository;
@@ -23,28 +24,38 @@ public class MessageService {
         this.userRepository = userRepository;
     }
 
-    public @NonNull MessageBoard saveMessage(MessageDTO dto) {
-        User sender = userRepository.findByUsername(dto.from())
+    public @NonNull MessageResponseDTO create(MessageDTO dto) {
+        // Sender can be any Admin or Staff member (ADMIN, AIRLINE, GATE or GROUND STAFFS)
+        User sender = userRepository.findByUsername(dto.fromUsername())
                 .orElseThrow(
                         () -> new RuntimeException("Sender Id does not exist")
                 );
-        User recipient = userRepository.findByUsername(dto.to())
+        /* // ADMIN is always the recipient
+        User recipient = userRepository.findByRole(dto.to())
                 .orElseThrow(
                         () -> new RuntimeException("Recipient Id does not exist")
-                );
+                );*/
 
-        MessageBoard message = new MessageBoard();
+        Message newMessage = new Message();
 
-        message.setMessage(dto.message());
-        message.setAirline(dto.airline());
-        message.setRecipient(recipient);
-        message.setSender(sender);
-        message.setRead(false);
+        newMessage.setMessage(dto.message());
+        newMessage.setAirline(dto.airline());
+        newMessage.setRecipient(dto.to());
+        newMessage.setSender(sender);
+        newMessage.setRead(false);
 
-        return messageRepo.save(message);
+        Message message = messageRepo.save(newMessage);
+        return new MessageResponseDTO(
+                message.getId(),
+                message.getMessage(),
+                message.getAirline(),
+                message.getRecipient(),
+                message.getSender().getUsername(),
+                message.getRead()
+        );
     }
 
-    public Optional<MessageBoard> findById(Long messageId) {
+    public Optional<Message> findById(Long messageId) {
         return messageRepo.findById(messageId);
     }
 
@@ -56,8 +67,8 @@ public class MessageService {
     }
 
     public List<MsgResponseDTO> findByRecipientRole(String role) {
-        return messageRepo.findByRecipientRole(role)
-                .stream()                       // Stream<MessageBoard>
+        return messageRepo.findByRecipient(role)
+                .stream()                       // Stream<Message>
                 .map(MessageService::getMsgResponseDTO)  // Mapper expects MessageBoard
                 .collect(Collectors.toList());  // List<MsgResponseDTO>
     }
@@ -69,10 +80,12 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
-    private static @NonNull MsgResponseDTO getMsgResponseDTO(MessageBoard msg) {
+    private static @NonNull MsgResponseDTO getMsgResponseDTO(Message msg) {
         return new MsgResponseDTO(
+                msg.getId(),
                 msg.getMessage(),
-                msg.getRecipient().getUsername(),
+                msg.getRecipient(),
+                msg.getSender().getRole(),
                 msg.getSender().getUsername(),
                 msg.getAirline(),
                 msg.getRead(),
@@ -80,12 +93,12 @@ public class MessageService {
         );
     }
 
-    public void save(MessageBoard message) {
-        messageRepo.save(message);
-    }
+//    public void save(Message message) {
+//        messageRepo.save(message);
+//    }
 
     public void deleteById(String id) {
-        MessageBoard msg = messageRepo.findById(Long.valueOf(id))
+        Message msg = messageRepo.findById(Long.valueOf(id))
                 .orElseThrow(
                         () -> new RuntimeException("Message with ID: " + id + " not found")
                 );
@@ -93,11 +106,20 @@ public class MessageService {
         messageRepo.delete(msg);
     }
 
-    public MessageBoard markAsRead(Long id) {
-        MessageBoard msg = messageRepo.findById(id).orElseThrow(
+    public void deleteByMessage(String message) {
+
+        Message msg = messageRepo.findByMessage(message)
+                .orElseThrow(() -> new RuntimeException("Message not found"));
+
+        messageRepo.delete(msg);
+    }
+
+    public Message markAsRead(String  id, boolean isRead) {
+        Message msg = messageRepo.findById(Long.valueOf(id)).orElseThrow(
                 () -> new RuntimeException("Message isRead not updated")
         );
-        msg.setRead(true);
+
+        msg.setRead(isRead);
         messageRepo.save(msg);
 
         return msg;

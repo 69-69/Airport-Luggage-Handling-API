@@ -22,7 +22,7 @@ public class UserProfile extends BaseEntity {
     @Column(nullable = false)
     private String lastname;
 
-    @Column(length = 20)
+    @Column(length = 50)
     private String airline;
 
     @OneToOne

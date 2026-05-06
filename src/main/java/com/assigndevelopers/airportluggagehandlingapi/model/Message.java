@@ -1,13 +1,12 @@
 package com.assigndevelopers.airportluggagehandlingapi.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 @Table(name = "message_board")
-public class MessageBoard extends BaseEntity {
+public class Message extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,7 +24,7 @@ public class MessageBoard extends BaseEntity {
     @JsonBackReference("message-sender")
     private User sender; // from
 
-    @ManyToOne
+    /*@ManyToOne
     @JoinColumn(
             name = "recipient_username",
             referencedColumnName = "username",
@@ -33,7 +32,9 @@ public class MessageBoard extends BaseEntity {
     )
 //    @JsonIgnore
     @JsonBackReference("message-recipient")
-    private User recipient; // to
+    private User recipient; // to*/
+    // Recipient: represent Role
+    private String recipient; // to
 
     @Column(nullable = false)
     private boolean isRead;
@@ -42,12 +43,12 @@ public class MessageBoard extends BaseEntity {
     private String airline;
 
     // Constructors
-    public MessageBoard() {
+    public Message() {
     }
 
     @Autowired
-    public MessageBoard(String message, User sender, User recipient,
-                        Boolean isRead, String airline) {
+    public Message(String message, User sender, String recipient,
+                   Boolean isRead, String airline) {
         this.message = message;
         this.sender = sender;
         this.recipient = recipient;
@@ -69,7 +70,7 @@ public class MessageBoard extends BaseEntity {
         return sender;
     }
 
-    public User getRecipient() {
+    public String getRecipient() {
         return recipient;
     }
 
@@ -89,7 +90,7 @@ public class MessageBoard extends BaseEntity {
         this.sender = sender;
     }
 
-    public void setRecipient(User recipient) {
+    public void setRecipient(String recipient) {
         this.recipient = recipient;
     }
 

@@ -7,18 +7,18 @@ public record PassengerDTO(
         @Size(max = 6)
         String flightCode,
 
-        @NotEmpty(message = "firstName is required")
+        @NotEmpty(message = "first name is required")
         String firstName,
 
-        @NotEmpty(message = "lastName is required")
+        @NotEmpty(message = "last name is required")
         String lastName,
 
         @Size(max = 6)
-        @NotEmpty(message = "idNumber is required")
-        @Size(max = 10)
+        @NotEmpty(message = "id number is required")
         String idNumber,
 
-        @NotEmpty(message = "ticketNumber is required")
+        @NotEmpty(message = "ticket number is required")
+        @Size(max = 10)
         String ticketNumber,
 
         @NotEmpty(message = "isRead is required")

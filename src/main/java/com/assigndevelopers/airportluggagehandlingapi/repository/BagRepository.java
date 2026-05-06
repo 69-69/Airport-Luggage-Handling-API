@@ -15,4 +15,6 @@ public interface BagRepository extends JpaRepository<Bag, Long> {
     Optional<List<Bag>> findByPassengerIdentification(String ticketNumber);
 
     List<Bag> findByPassenger(Passenger passenger);
+
+    List<Bag> findByPassenger_TicketNumber(String ticketNumber);
 }

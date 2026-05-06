@@ -1,6 +1,7 @@
 package com.assigndevelopers.airportluggagehandlingapi.service;
 
 import com.assigndevelopers.airportluggagehandlingapi.dto.AuthResultDTO;
+import com.assigndevelopers.airportluggagehandlingapi.dto.LoginDTO;
 import com.assigndevelopers.airportluggagehandlingapi.dto.RegisterDTO;
 import com.assigndevelopers.airportluggagehandlingapi.dto.UserDTO;
 import com.assigndevelopers.airportluggagehandlingapi.model.User;
@@ -8,6 +9,8 @@ import com.assigndevelopers.airportluggagehandlingapi.model.UserProfile;
 import com.assigndevelopers.airportluggagehandlingapi.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.jspecify.annotations.NonNull;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +28,37 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User findByUsername(String username) {
+        Optional<User> userOpt = userRepository.findByUsername(username);
+
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        return userOpt.get();
+    }
+
+    public User login(LoginDTO dto) {
+        User user = findByUsername(dto.username());
+
+        if (!checkPassword(user, dto.password())) {
+            throw new RuntimeException("Invalid username or password");
+        }
+
+        setLoginStatus(user, true);
+
+        return user;
+    }
+
+    public void logout(String username) {
+        User user = findByUsername(username);
+        setLoginStatus(user, false);
+    }
+
+    /// True for Active Logged-in, False: for logout/failed
+    public void setLoginStatus(User user, boolean status) {
+        user.setActive(status);
+        userRepository.save(user);
     }
 
     public Optional<User> findByEmail(String email) {
@@ -57,7 +89,8 @@ public class UserService {
         // Hash the password before saving
         String hashedPassword = passwordEncoder.encode(dto.password());
         user.setPassword(hashedPassword);
-        user.setFirstLogin(true);
+        user.setFirstLogin(false);
+        user.setActive(false);
 
         profile.setEmail(dto.email());
         profile.setFirstname(dto.firstName());
@@ -139,7 +172,7 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    @Transactional
+    //    @Transactional
     public void deleteByPhone(String phone) {
         User user = userRepository.findByProfilePhone(phone)
                 .orElseThrow(

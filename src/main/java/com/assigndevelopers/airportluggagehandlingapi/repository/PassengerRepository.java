@@ -12,4 +12,6 @@ public interface PassengerRepository extends JpaRepository<Passenger, String> {
      Optional<Passenger> findByTicketNumber(String flightNumber);
 
     Optional<Passenger> findByIdentification(String idNumber);
+
+    Optional<Passenger> findByIdentificationAndTicketNumber(String identification, String ticketNumber);
 }

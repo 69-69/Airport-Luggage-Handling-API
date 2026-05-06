@@ -1,16 +1,19 @@
 package com.assigndevelopers.airportluggagehandlingapi.repository;
 
-import com.assigndevelopers.airportluggagehandlingapi.model.MessageBoard;
+import com.assigndevelopers.airportluggagehandlingapi.model.Message;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface MessageRepository extends JpaRepository<MessageBoard, Long> {
-    void deleteById(Long id);
+public interface MessageRepository extends JpaRepository<Message, Long> {
+    void deleteById(@NonNull Long id);
 
-    List<MessageBoard> findBySenderRole(String role);
+    List<Message> findBySenderRole(String role);
 
-    List<MessageBoard> findByRecipientRole(String recipientRole);
+    /// Recipient: Represent Role
+    List<Message> findByRecipient(String recipientRole);
 
+    Optional<Message> findByMessage(String message);
 }

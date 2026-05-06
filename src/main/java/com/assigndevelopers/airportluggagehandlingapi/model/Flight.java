@@ -1,26 +1,24 @@
 package com.assigndevelopers.airportluggagehandlingapi.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 @Entity
 public class Flight extends BaseEntity {
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String airlineName;
 
     @Column(nullable = false)
     private String destination;
 
     @Id
-    @Column(length = 6, nullable = false)
+    @Column(length = 6, nullable = false/*, unique = true*/)
     private String flightCode; // AA1234
 
     private String departureTime;
@@ -31,7 +29,8 @@ public class Flight extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String gate;
 
-    private boolean isBoarding;
+    // @Enumerated(EnumType.STRING)
+    private String status;
 
     // new here
     @OneToMany(
@@ -49,10 +48,10 @@ public class Flight extends BaseEntity {
     @Autowired
     public Flight(String airlineName, String destination, String flightCode,
                   String departureTime, String terminal, String gate,
-                  List<Bag> bags, boolean isBoarding) {
+                  List<Bag> bags, String status) {
         this.airlineName = airlineName;
         this.destination = destination;
-        this.isBoarding = isBoarding;
+        this.status = status;
         this.flightCode = flightCode;
         this.departureTime = departureTime;
         this.terminal = terminal;
@@ -79,12 +78,12 @@ public class Flight extends BaseEntity {
         this.bags = bags;
     }
 
-    public boolean getIsBoarding() {
-        return isBoarding;
+    public String getStatus() {
+        return status;
     }
 
-    public void setIsBoarding(boolean isBoarding) {
-        this.isBoarding = isBoarding;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getAirlineName() {
@@ -103,6 +102,8 @@ public class Flight extends BaseEntity {
         this.destination = destination;
     }
 
+    @JsonProperty
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public String getDepartureTime() {
         return departureTime;
     }

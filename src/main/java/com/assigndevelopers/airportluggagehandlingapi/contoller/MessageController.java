@@ -1,8 +1,10 @@
 package com.assigndevelopers.airportluggagehandlingapi.contoller;
 
 import com.assigndevelopers.airportluggagehandlingapi.dto.MessageDTO;
+import com.assigndevelopers.airportluggagehandlingapi.dto.MessageResponseDTO;
+import com.assigndevelopers.airportluggagehandlingapi.dto.ModifyMessageDTO;
 import com.assigndevelopers.airportluggagehandlingapi.dto.MsgResponseDTO;
-import com.assigndevelopers.airportluggagehandlingapi.model.MessageBoard;
+import com.assigndevelopers.airportluggagehandlingapi.model.Message;
 import com.assigndevelopers.airportluggagehandlingapi.service.MessageService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -11,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/messages")
@@ -23,9 +24,9 @@ public class MessageController {
     }
 
     @PostMapping("/send")
-    public ResponseEntity<?> sendMessage(@Valid @RequestBody MessageDTO dto) {
+    public ResponseEntity<?> send(@Valid @RequestBody MessageDTO dto) {
         try {
-            MessageBoard message = messageService.saveMessage(dto);
+            MessageResponseDTO message = messageService.create(dto);
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -38,7 +39,7 @@ public class MessageController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MsgResponseDTO>> getAll() {
+    public ResponseEntity<List<MsgResponseDTO>> get() {
         List<MsgResponseDTO> messages = messageService.getAll();
 
         if (messages.isEmpty()) {
@@ -48,12 +49,23 @@ public class MessageController {
         return ResponseEntity.ok(messages);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> markAsRead(@PathVariable String id) {
-        MessageBoard msg = messageService.markAsRead(Long.valueOf(id));
+    @PutMapping("/read-status")
+    public ResponseEntity<?> markAsRead(@RequestBody Map<String, String> body) {
+        String id = body.get("id");
+        boolean isRead = Boolean.parseBoolean(body.get("isRead"));
+        Message msg = messageService.markAsRead(id, isRead);
 
         return ResponseEntity.ok(msg);
     }
+
+    @PostMapping("/deleteByMessage")
+    public ResponseEntity<?> deleteByMessage(@RequestBody ModifyMessageDTO request) {
+
+        messageService.deleteById(request.message());
+
+        return ResponseEntity.ok(Map.of("message", "Message deleted"));
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
@@ -63,7 +75,7 @@ public class MessageController {
     }
 
     @GetMapping("/sent/role/{role}")
-    public ResponseEntity<List<MsgResponseDTO>> getMessagesSentByRole(@PathVariable String role) {
+    public ResponseEntity<List<MsgResponseDTO>> getBySentRole(@PathVariable String role) {
 
         List<MsgResponseDTO> messages = messageService.findBySenderRole(role);
 
@@ -75,7 +87,7 @@ public class MessageController {
     }
 
     @GetMapping("/received/role/{role}")
-    public ResponseEntity<List<MsgResponseDTO>> getMessagesReceivedByRole(
+    public ResponseEntity<List<MsgResponseDTO>> getByReceivedRole(
             @PathVariable String role) {
         List<MsgResponseDTO> messages = messageService.findByRecipientRole(role);
 

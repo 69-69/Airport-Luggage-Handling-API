@@ -1,5 +1,6 @@
 package com.assigndevelopers.airportluggagehandlingapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ public class User {
     @Column(unique = true, nullable = false, updatable = false)
     private String username;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
     /*
@@ -32,31 +34,42 @@ public class User {
     /*
      *  ONE-TO-MANY (Sent Messages)
      */
-    @OneToMany(mappedBy = "sender")
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("sender-username")
-    private List<MessageBoard> sentMessages;
+    private List<Message> sentMessages;
 
     /*
      *  ONE-TO-MANY (Received Messages)
-     */
     @OneToMany(mappedBy = "recipient")
     @JsonManagedReference("recipient-username")
-    private List<MessageBoard> receivedMessages;
+    private List<Message> receivedMessages;*/
 
     @Column(nullable = false)
     private boolean isFirstLogin;
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    @Column(nullable = false)
+    private boolean isActive;
 
     // Constructors
     public User() {
     }
 
     @Autowired
-    public User(String role, String username, String password, boolean isFirstLogin, UserProfile profile) {
+    public User(String role, String username, String password, boolean isFirstLogin, UserProfile profile, boolean isActive) {
         this.role = role;
         this.username = username;
         this.password = password;
         this.isFirstLogin = isFirstLogin;
         this.profile = profile;
+        this.isActive = isActive;
     }
 
     public UserProfile getProfile() {
@@ -70,20 +83,12 @@ public class User {
         }
     }
 
-    public void setReceivedMessages(List<MessageBoard> receivedMessages) {
-        this.receivedMessages = receivedMessages;
-    }
-
-    public void setSentMessages(List<MessageBoard> sentMessages) {
+    public void setSentMessages(List<Message> sentMessages) {
         this.sentMessages = sentMessages;
     }
 
-    public List<MessageBoard> getSentMessages() {
+    public List<Message> getSentMessages() {
         return sentMessages;
-    }
-
-    public List<MessageBoard> getReceivedMessages() {
-        return receivedMessages;
     }
 
     public String getRole() {

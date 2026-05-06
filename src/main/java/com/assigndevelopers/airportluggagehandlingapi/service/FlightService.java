@@ -2,6 +2,7 @@ package com.assigndevelopers.airportluggagehandlingapi.service;
 
 import com.assigndevelopers.airportluggagehandlingapi.dto.ChangeGateDTO;
 import com.assigndevelopers.airportluggagehandlingapi.dto.FlightDTO;
+import com.assigndevelopers.airportluggagehandlingapi.dto.FlightStatus;
 import com.assigndevelopers.airportluggagehandlingapi.model.Flight;
 import com.assigndevelopers.airportluggagehandlingapi.repository.FlightRepository;
 import jakarta.transaction.Transactional;
@@ -45,7 +46,7 @@ public class FlightService {
         flight.setDestination(dto.destination());
         flight.setTerminal(dto.terminal());
         flight.setGate(dto.gate());
-        flight.setIsBoarding(false);
+        flight.setStatus(FlightStatus.SCHEDULED.toString());
 
         return flightRepository.save(flight);
     }
@@ -67,8 +68,19 @@ public class FlightService {
                         () -> new RuntimeException("Flight with ID: " + flightCode + " not found")
                 );
 
-        flight.setFlightCode(dto.gate());
+        flight.setGate(dto.gate());
         flight.setTerminal(dto.terminal());
+
+        flightRepository.save(flight);
+    }
+
+    public void updateStatus(String flightCode, String status) {
+        Flight flight = flightRepository.findByFlightCode(flightCode)
+                .orElseThrow(
+                        () -> new RuntimeException("Flight with ID: " + flightCode + " not found")
+                );
+
+        flight.setStatus(status);
 
         flightRepository.save(flight);
     }

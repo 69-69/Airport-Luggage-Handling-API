@@ -7,10 +7,12 @@ public record MessageDTO(
         String message,
         @NotEmpty(message = "recipient is required")
         String to,
-        @NotEmpty(message = "sender is required")
-        String from,
+        @NotEmpty(message = "sender role is required")
+        String fromRole,
+        @NotEmpty(message = "sender username is required")
+        String fromUsername,
         @NotEmpty(message = "airline is required")
         String airline,
-        String status
+        String isRead
 ) {
 }

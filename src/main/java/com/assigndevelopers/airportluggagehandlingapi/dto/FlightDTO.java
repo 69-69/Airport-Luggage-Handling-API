@@ -21,9 +21,9 @@ public record FlightDTO(
         String terminal,
 
         @NotBlank(message = "Gate is required")
-        String gate,
+        String gate
 
-        List<BagDTO> bags,
+//        List<BagDTO> bags,
 
-        boolean isBoarding
+//        boolean isBoarding
 ) {}

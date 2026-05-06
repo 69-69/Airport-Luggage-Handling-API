@@ -1,9 +1,15 @@
 package com.assigndevelopers.airportluggagehandlingapi.service;
 
+import com.assigndevelopers.airportluggagehandlingapi.dto.AuthResultDTO;
 import com.assigndevelopers.airportluggagehandlingapi.dto.PassengerDTO;
+import com.assigndevelopers.airportluggagehandlingapi.dto.PassengerStatus;
+import com.assigndevelopers.airportluggagehandlingapi.dto.UserDTO;
 import com.assigndevelopers.airportluggagehandlingapi.model.Passenger;
+import com.assigndevelopers.airportluggagehandlingapi.model.User;
+import com.assigndevelopers.airportluggagehandlingapi.model.UserProfile;
 import com.assigndevelopers.airportluggagehandlingapi.repository.PassengerRepository;
 import jakarta.transaction.Transactional;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,8 +40,24 @@ public class PassengerService {
         return passengerRepository.findById(id);
     }
 
-    public Optional<Passenger> findByFlightCode(String ticketNumber) {
-        return passengerRepository.findByFlightCode(ticketNumber);
+    public Passenger login(String id, String ticketNumber) {
+        return passengerRepository.findByIdentificationAndTicketNumber(id, ticketNumber)
+                .orElseThrow(
+                        ()-> new RuntimeException("Invalid passenger ticket or passport or driver's license")
+                );
+    }
+    public @NonNull AuthResultDTO getAuthResult(Passenger passenger) {
+
+        PassengerDTO passengerDTO = new PassengerDTO(
+                passenger.getFlightCode(),
+                passenger.getFirstName(),
+                passenger.getLastName(),
+                passenger.getIdentification(),
+                passenger.getTicketNumber(),
+                passenger.getStatus()
+        );
+
+        return AuthResultDTO.successPassenger(passengerDTO);
     }
 
     // This is 6 digits Identification number from Passport or Driver License
@@ -44,11 +66,15 @@ public class PassengerService {
     }
 
     // This is 6 digits Identification number from Passport or Driver License
-    public Optional<Passenger> findByIdNumber(String flightNumber) {
-        return passengerRepository.findByIdentification(flightNumber);
+    public Optional<Passenger> findByIdNumber(String id) {
+        return passengerRepository.findByIdentification(id);
     }
 
-    public Passenger save(PassengerDTO dto) {
+    public Optional<Passenger> findByIdAndTicket(String id, String ticketNumber) {
+        return passengerRepository.findByIdentificationAndTicketNumber(id, ticketNumber);
+    }
+
+    public Passenger create(PassengerDTO dto) {
         Passenger passenger = new Passenger();
 
         passenger.setFirstName(dto.firstName());
@@ -61,15 +87,52 @@ public class PassengerService {
         return passengerRepository.save(passenger);
     }
 
-    Optional<Passenger> update(Passenger passenger) {
-        return Optional.of(passengerRepository.save(passenger));
+    public Passenger changeFlight(String ticket, String newFlightCode) {
+        Passenger passenger = passengerRepository.findByTicketNumber(ticket)
+                .orElseThrow(
+                        () -> new RuntimeException("Passenger with ticket number " + ticket + " not found")
+                );
+        // Return, if current flight same as new flight update
+        if (passenger.getFlightCode().equals(newFlightCode)) {
+            return passenger;
+        }
+
+        passenger.setFlightCode(newFlightCode);
+
+        return passengerRepository.save(passenger);
+    }
+
+    public Passenger updateStatus(String ticket, String isBoarding) {
+        Passenger passenger = passengerRepository.findByTicketNumber(ticket)
+                .orElseThrow(
+                        () -> new RuntimeException("Passenger with ticket number " + ticket + " not found")
+                );
+
+        PassengerStatus status =
+                isBoarding.equals("yes") ?
+                        PassengerStatus.BOARDED :
+                        PassengerStatus.CHECKED_IN;
+
+        passenger.setStatus(status.toString());
+
+        return passengerRepository.save(passenger);
     }
 
     @Transactional
     public void delete(String id) {
         Passenger passenger = passengerRepository.findById(id)
                 .orElseThrow(
-                        () -> new RuntimeException("Passenger with bagId: " + id + " deleted")
+                        () -> new RuntimeException("Passenger with ID: " + id + " not found")
+                );
+
+        passengerRepository.delete(passenger);
+    }
+
+    @Transactional
+    public void deleteByTicket(String ticket) {
+        Passenger passenger = passengerRepository.findByTicketNumber(ticket)
+                .orElseThrow(
+                        () -> new RuntimeException("Passenger with ticket: " + ticket + " not found")
                 );
 
         passengerRepository.delete(passenger);

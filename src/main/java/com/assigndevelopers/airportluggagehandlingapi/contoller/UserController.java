@@ -33,18 +33,17 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResultDTO> login(@RequestBody LoginDTO loginDTO) {
-        Optional<User> userOpt = userService.findByUsername(loginDTO.username());
-
-        if (userOpt.isEmpty() || !userService.checkPassword(userOpt.get(), loginDTO.password())) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(AuthResultDTO.failure("Invalid username or password"));
-        }
-
-        AuthResultDTO authResultDTO = userService.getAuthResult(userOpt.get(), true);
-
+    public ResponseEntity<AuthResultDTO> login(@RequestBody LoginDTO dto) {
+        User user = userService.login(dto);
+        AuthResultDTO authResultDTO = userService.getAuthResult(user, true);
         return ResponseEntity.ok(authResultDTO);
+    }
+
+    @PostMapping("/{username}/logout")
+    public ResponseEntity<?> logout(@PathVariable String username) {
+        userService.logout(username);
+        return ResponseEntity.ok(Map.of("message", "User successfully logout"));
+
     }
 
     @GetMapping

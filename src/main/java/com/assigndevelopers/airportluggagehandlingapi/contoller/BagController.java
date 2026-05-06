@@ -7,7 +7,6 @@ import com.assigndevelopers.airportluggagehandlingapi.service.BagService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -40,7 +39,7 @@ public class BagController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BagDTO>> getBags() {
+    public ResponseEntity<List<BagDTO>> get() {
         List<BagDTO> bags = bagService.findAll();
 
         if (bags.isEmpty()) {
@@ -59,9 +58,17 @@ public class BagController {
                 .body(bags);
     }
 
-    @PutMapping("/update-location/{bagId}/{location}")
-    public ResponseEntity<Bag> updateBagLocation(@PathVariable String bagId, @PathVariable String location) {
-        Bag bag = bagService.updateLocation(Long.valueOf(bagId), location);
+    @DeleteMapping("/{bagId}")
+    public ResponseEntity<?> delete(@PathVariable String bagId) {
+
+        bagService.deleteById(bagId);
+
+        return ResponseEntity.ok(Map.of("message", "Bag with ID: " + bagId + " deleted"));
+    }
+
+    @PatchMapping("/update-location/{bagId}/{newLocation}")
+    public ResponseEntity<Bag> updateLocation(@PathVariable String bagId, @PathVariable String newLocation) {
+        Bag bag = bagService.updateLocation(Long.valueOf(bagId), newLocation);
 
         return ResponseEntity.status(HttpStatus.OK).body(bag);
     }

@@ -12,10 +12,13 @@ public record BagDTO(
         @NotEmpty(message = "location or isRead is required")
         String location,
 
-        @NotEmpty(message = "10 digits flight number is required")
-        String flightCode,
-
         @NotEmpty(message = "ticket number is required")
-        String ticketNumber
+        String ticketNumber,
+
+        String weight
+
+//        @NotEmpty(message = "10 digits flight number is required")
+//        String flightCode,
+
 ) {
 }

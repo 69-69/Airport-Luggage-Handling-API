@@ -20,7 +20,7 @@ public class Passenger extends BaseEntity {
     private String lastName;
 
     @Column(length =  10, nullable = false, unique = true)
-    private String ticketNumber;
+    private String ticketNumber; // 1234567891
 
     @Column(length =  6)
     private String flightCode; // AA1234
@@ -56,7 +56,6 @@ public class Passenger extends BaseEntity {
 //            orphanRemoval = true
 //    )
 //    private Ticket ticket;
-
 
 //    public Long getId() {
 //        return bagId;

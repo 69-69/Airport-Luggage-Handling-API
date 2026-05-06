@@ -26,10 +26,15 @@ public class FlightController {
     @PostMapping("/add")
     public ResponseEntity<?> add(@Valid @RequestBody FlightDTO dto) {
         try {
-            Optional<Flight> flightOpt = flightService.getFlightByGate(dto.gate());
-            if (flightOpt.isPresent()) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Flight with gate " + dto.gate() + " already exists");
-            }
+            flightService.getFlightByGate(dto.gate())
+                    .ifPresent(
+                            flight -> {
+                                throw new RuntimeException("Flight with gate " + dto.gate() + " already exists");
+                            }
+                    );
+            /*if (flightOpt.isPresent()) {
+                return ResponseEntity.isRead(HttpStatus.CONFLICT).body();
+            }*/
 
             Flight flight = flightService.create(dto);
 
@@ -62,11 +67,24 @@ public class FlightController {
         return ResponseEntity.ok(flights);
     }
 
-    @PutMapping("/{flightCode}/gate")
-    public ResponseEntity<?> changeGate(@PathVariable String flightCode, @RequestBody ChangeGateDTO dto) {
+    @PutMapping("/change-gate/{flightCode}")
+    public ResponseEntity<?> changeGate(
+            @PathVariable String flightCode,
+            @RequestBody ChangeGateDTO dto
+    ) {
         flightService.changeGate(flightCode, dto);
 
         return ResponseEntity.ok(Map.of("message", "Flight gate successfully changed"));
+    }
+
+    @PutMapping("/update-status/{flightCode}/{status}")
+    public ResponseEntity<?> updateStatus(
+            @PathVariable String flightCode,
+            @PathVariable String status
+    ) {
+        flightService.updateStatus(flightCode, status);
+
+        return ResponseEntity.ok(Map.of("message", "Flight status successfully updated"));
     }
 
     @GetMapping

@@ -15,6 +15,8 @@ public class Bag extends  BaseEntity {
     @Column(nullable = false)
     private String location; // Bag Status
 
+    private String weight;
+
     // Bags are linked to a ticket (Many bags can belong to one ticket)
     @ManyToOne
     @JoinColumn(
@@ -79,6 +81,14 @@ public class Bag extends  BaseEntity {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
     }
 
 }
