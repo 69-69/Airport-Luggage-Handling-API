@@ -40,12 +40,13 @@ public class PassengerService {
         return passengerRepository.findById(id);
     }
 
-    public Passenger login(String id, String ticketNumber) {
-        return passengerRepository.findByIdentificationAndTicketNumber(id, ticketNumber)
+    public void login(String id, String ticketNumber) {
+        passengerRepository.findByIdentificationAndTicketNumber(id, ticketNumber)
                 .orElseThrow(
-                        ()-> new RuntimeException("Invalid passenger ticket or passport or driver's license")
+                        () -> new RuntimeException("Invalid passenger ticket or passport or driver's license")
                 );
     }
+
     public @NonNull AuthResultDTO getAuthResult(Passenger passenger) {
 
         PassengerDTO passengerDTO = new PassengerDTO(

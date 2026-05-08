@@ -38,7 +38,7 @@ public class UserService {
         return userOpt.get();
     }
 
-    public User login(LoginDTO dto) {
+    public void login(LoginDTO dto) {
         User user = findByUsername(dto.username());
 
         if (!checkPassword(user, dto.password())) {
@@ -47,7 +47,7 @@ public class UserService {
 
         setLoginStatus(user, true);
 
-        return user;
+//        return user;
     }
 
     public void logout(String username) {
