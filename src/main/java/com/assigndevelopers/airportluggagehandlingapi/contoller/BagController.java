@@ -1,3 +1,4 @@
+/*
 package com.assigndevelopers.airportluggagehandlingapi.contoller;
 
 import com.assigndevelopers.airportluggagehandlingapi.dto.BagDTO;
@@ -72,4 +73,4 @@ public class BagController {
 
         return ResponseEntity.status(HttpStatus.OK).body(bag);
     }
-}
+}*/
