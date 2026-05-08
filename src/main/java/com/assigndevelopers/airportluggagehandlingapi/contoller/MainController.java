@@ -1,5 +1,3 @@
-/// NOTE: This MainController was made modular into individua; controllers because I wanted track achuators and error
-/*
 package com.assigndevelopers.airportluggagehandlingapi.contoller;
 
 import com.assigndevelopers.airportluggagehandlingapi.dto.*;
@@ -47,25 +45,9 @@ public class MainController {
     }
 
     @PostMapping("/users/login")
-    public ResponseEntity<AuthResultDTO> login(@RequestBody LoginDTO dto) {
-
-        User user = userService.login(dto);
-        AuthResultDTO authResultDTO = userService.getAuthResult(user, true);
-        return ResponseEntity.ok(authResultDTO);
-
-
-        */
-/*Optional<User> userOpt = userService.findByUsername(dto);
-
-        if (userOpt.isEmpty() || !userService.checkPassword(userOpt.get(), dto.password())) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(AuthResultDTO.failure("Invalid username or password"));
-        }
-
-        userService.setLoginStatus(userOpt.get());
-        AuthResultDTO authResultDTO = userService.getAuthResult(userOpt, true);*//*
-
+    public ResponseEntity<?> login(@RequestBody LoginDTO dto) {
+        userService.login(dto);
+        return ResponseEntity.ok(Map.of("message", "User successfully login"));
     }
 
     @PostMapping("/users/{username}/logout")
@@ -111,11 +93,9 @@ public class MainController {
                                 throw new RuntimeException("Flight with gate " + dto.gate() + " already exists");
                             }
                     );
-            */
-/*if (flightOpt.isPresent()) {
+            /*if (flightOpt.isPresent()) {
                 return ResponseEntity.isRead(HttpStatus.CONFLICT).body();
-            }*//*
-
+            }*/
 
             Flight flight = flightService.create(dto);
 
@@ -135,17 +115,25 @@ public class MainController {
         return flightOpt.map(ResponseEntity::ok).orElseGet(() -> flightOpt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build()));
     }
 
+    @PutMapping("/flights/update-status/{flightCode}/{status}")
+    public ResponseEntity<?> updateFlightStatus(
+            @PathVariable String flightCode,
+            @PathVariable String status
+    ) {
+        flightService.updateStatus(flightCode, status);
+
+        return ResponseEntity.ok(Map.of("message", "Flight status successfully updated"));
+    }
+
     @GetMapping("/flights/search")
     public ResponseEntity<?> getByAirlineCodeAndGate(
             @RequestParam String airlineCode,
             @RequestParam String gate
     ) {
         List<Flight> flights = flightService.findByAirlineCodeAndGate(airlineCode, gate);
-        */
-/*if (flights.isEmpty()) {
+        if (flights.isEmpty()) {
             throw new RuntimeException("Flight with ID: " + airlineCode + " not found");
-        }*//*
-
+        }
 
         return ResponseEntity.ok(flights);
     }
@@ -158,16 +146,6 @@ public class MainController {
         flightService.changeGate(flightCode, dto);
 
         return ResponseEntity.ok(Map.of("message", "Flight gate successfully changed"));
-    }
-
-    @PutMapping("/flights/update-status/{flightCode}/{status}")
-    public ResponseEntity<?> updateFlightStatus(
-            @PathVariable String flightCode,
-            @PathVariable String status
-    ) {
-        flightService.updateStatus(flightCode, status);
-
-        return ResponseEntity.ok(Map.of("message", "Flight status successfully updated"));
     }
 
     @GetMapping("/flights")
@@ -188,13 +166,13 @@ public class MainController {
     /// Passenger Controller (/passengers)
     ///
     @PostMapping("/passengers/login")
-    public ResponseEntity<AuthResultDTO> loginPassenger(@RequestBody PassengerLoginDTO dto) {
+    public ResponseEntity<?> loginPassenger(@RequestBody PassengerLoginDTO dto) {
         String identification = dto.identification();
         String ticket = dto.ticket();
 
-        Passenger passenger = passengerService.login(identification, ticket);
-        AuthResultDTO authResultDTO = passengerService.getAuthResult(passenger);
-        return ResponseEntity.ok(authResultDTO);
+        passengerService.login(identification, ticket);
+
+        return ResponseEntity.ok(Map.of("message", "Passenger successfully login"));
 
     }
 
@@ -205,6 +183,7 @@ public class MainController {
         return ResponseEntity.ok(Map.of("message", "Passenger successfully logout"));
 
     }
+
     @PostMapping("/passengers/add")
     public ResponseEntity<?> addPassenger(@Valid @RequestBody PassengerDTO dto) {
         try {
@@ -220,12 +199,6 @@ public class MainController {
                                 throw new RuntimeException(dto.ticketNumber() + " number already assigned to " + ticket.getFirstName());
                             }
                     );
-            */
-/*Optional<Passenger> flightOpt = passengerService.findByIdNumber(dto.idNumber());
-            if (flightOpt.isPresent()) {
-                return ResponseEntity.isRead(HttpStatus.CONFLICT).body();
-            }*//*
-
 
             Passenger passenger = passengerService.create(dto);
 
@@ -329,6 +302,13 @@ public class MainController {
         }
     }
 
+    @PatchMapping("/bags/update-location/{bagId}/{newLocation}")
+    public ResponseEntity<Bag> updateBagLocation(@PathVariable String bagId, @PathVariable String newLocation) {
+        Bag bag = bagService.updateLocation(Long.valueOf(bagId), newLocation);
+
+        return ResponseEntity.status(HttpStatus.OK).body(bag);
+    }
+
     @GetMapping("/bags")
     public ResponseEntity<List<BagDTO>> getBags() {
         List<BagDTO> bags = bagService.findAll();
@@ -357,20 +337,13 @@ public class MainController {
         return ResponseEntity.ok(Map.of("message", "Bag with ID: " + bagId + " deleted"));
     }
 
-    @PatchMapping("/bags/update-location/{bagId}/{newLocation}")
-    public ResponseEntity<Bag> updateBagLocation(@PathVariable String bagId, @PathVariable String newLocation) {
-        Bag bag = bagService.updateLocation(Long.valueOf(bagId), newLocation);
-
-        return ResponseEntity.status(HttpStatus.OK).body(bag);
-    }
-
 
     /// Message Controller (/messages)
     ///
     @PostMapping("/messages/send")
     public ResponseEntity<?> sendMessage(@Valid @RequestBody MessageDTO dto) {
         try {
-            Message message = messageService.create(dto);
+            MessageResponseDTO message = messageService.create(dto);
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -400,14 +373,6 @@ public class MainController {
         Message msg = messageService.markAsRead(id, isRead);
 
         return ResponseEntity.ok(msg);
-    }
-
-    @PostMapping("/messages/deleteByMessage")
-    public ResponseEntity<?> deleteByMessage(@RequestBody ModifyMessageDTO request) {
-
-        messageService.deleteById(request.message());
-
-        return ResponseEntity.ok(Map.of("message", "Message deleted"));
     }
 
 
@@ -443,4 +408,3 @@ public class MainController {
     }
 
 }
-*/
