@@ -1,4 +1,3 @@
-/*
 package com.assigndevelopers.airportluggagehandlingapi.contoller;
 
 import com.assigndevelopers.airportluggagehandlingapi.dto.AuthResultDTO;
@@ -142,4 +141,3 @@ public class PassengerController {
     }
 
 }
-*/
