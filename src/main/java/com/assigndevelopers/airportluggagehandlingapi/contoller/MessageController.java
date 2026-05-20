@@ -1,3 +1,4 @@
+/*
 package com.assigndevelopers.airportluggagehandlingapi.contoller;
 
 import com.assigndevelopers.airportluggagehandlingapi.dto.MessageDTO;
@@ -98,3 +99,4 @@ public class MessageController {
         return ResponseEntity.ok(messages);
     }
 }
+*/

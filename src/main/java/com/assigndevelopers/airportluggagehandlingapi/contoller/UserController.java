@@ -1,3 +1,4 @@
+/*
 package com.assigndevelopers.airportluggagehandlingapi.contoller;
 
 import com.assigndevelopers.airportluggagehandlingapi.dto.AuthResultDTO;
@@ -70,3 +71,4 @@ public class UserController {
         return ResponseEntity.ok(Map.of("message", "User successfully deleted"));
     }
 }
+*/
