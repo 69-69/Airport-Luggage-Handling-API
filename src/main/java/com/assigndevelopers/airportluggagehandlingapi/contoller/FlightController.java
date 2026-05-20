@@ -1,4 +1,3 @@
-/*
 package com.assigndevelopers.airportluggagehandlingapi.contoller;
 
 import com.assigndevelopers.airportluggagehandlingapi.dto.ChangeGateDTO;
@@ -33,11 +32,9 @@ public class FlightController {
                                 throw new RuntimeException("Flight with gate " + dto.gate() + " already exists");
                             }
                     );
-            */
-/*if (flightOpt.isPresent()) {
+            /*if (flightOpt.isPresent()) {
                 return ResponseEntity.isRead(HttpStatus.CONFLICT).body();
-            }*//*
-
+            }*/
 
             Flight flight = flightService.create(dto);
 
@@ -105,4 +102,3 @@ public class FlightController {
         return ResponseEntity.ok(Map.of("message", "Flight with code: " + flightCode + " deleted"));
     }
 }
-*/
